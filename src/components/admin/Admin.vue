@@ -29,15 +29,15 @@
 
       <Layout :style="{background: '#EEEEEE'}">
         <!--右侧的 Header-->
-        <Header :style="{padding: 0}" class="layout-header-bar">
-          <!-- @click.native="collapsedSider" 伸缩侧边栏 -->
-          <!--<Icon @click.native="collapsedSider"
+        <!--<Header :style="{padding: 0}" class="layout-header-bar">
+           @click.native="collapsedSider" 伸缩侧边栏
+          <Icon @click.native="collapsedSider"
                 :class="rotateIcon"
                 :style="{margin: '0 20px'}"
                 type="md-menu"
                 size="24">
-          </Icon>-->
-        </Header>
+          </Icon>
+        </Header>-->
 
         <!--右侧的 内容-->
         <Content :style="{margin: '10px 0px 0px 10px', background: '#FFF', minHeight: '260px'}">
@@ -55,7 +55,7 @@
           </div>
           <!--导航栏-->
           <div v-if="flag == 'navigation'">
-            <Navigation></Navigation>
+            <Navigation v-bind:tab="tab"></Navigation>
           </div>
         </Content>
       </Layout>
@@ -86,7 +86,10 @@
         //显示面板
         flag: "chart",
         //导航的菜单
-        navNames: ["howUse", "vip", "teacher", "suggestion", "joke", "interview", "icu", "interview", "offer"]
+        // navNames: ["howUse", "vip", "teacher", "suggestion", "joke", "interview", "icu", "interview", "offer"],
+        navNames: [],
+        //传给 导航栏
+        tab: ""
       }
     },
     computed: {
@@ -105,9 +108,10 @@
       },
       //选中折叠菜单
       selectMenu: function (name) {
+        //遍历
         for (let s of this.navNames) {
-          console.log(s);
           if (s == name) {
+            this.tab = name
             this.flag = "navigation"
             return false;
           }
@@ -116,10 +120,21 @@
       },
       //页面加载
       load: function () {
+        //查询菜单列表
         this.axios.get(`${this.domain.Admin}/menu/menuList`)
           .then(resp => {
             let list = resp.data.data.list;
             this.menuList = list;
+          })
+          .catch(resp => {
+          })
+        //查询导航菜单列表
+        this.axios.get(`${this.domain.Admin}/menu/menuNavList`)
+          .then(resp => {
+            let list = resp.data.data.list;
+            for (let i of list) {
+              this.navNames.push(i.menuCode);
+            }
           })
           .catch(resp => {
           })
