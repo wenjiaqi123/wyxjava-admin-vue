@@ -29,34 +29,19 @@
 
       <Layout :style="{background: '#EEEEEE'}">
         <!--右侧的 Header-->
-        <!--<Header :style="{padding: 0}" class="layout-header-bar">
-           @click.native="collapsedSider" 伸缩侧边栏
-          <Icon @click.native="collapsedSider"
+        <Header :style="{padding: 0}" class="layout-header-bar">
+          <!--<Icon @click.native="collapsedSider"
                 :class="rotateIcon"
                 :style="{margin: '0 20px'}"
                 type="md-menu"
                 size="24">
-          </Icon>
-        </Header>-->
+          </Icon>-->
+        </Header>
 
         <!--右侧的 内容-->
         <Content :style="{margin: '10px 0px 0px 10px', background: '#FFF', minHeight: '260px'}">
-          <!--轮播图-->
-          <div v-if="flag == 'rotationChart'">
-            <RotationChart></RotationChart>
-          </div>
-          <!--课程-->
-          <div v-if="flag == 'course'">
-            <Course></Course>
-          </div>
-          <!--题目-->
-          <div v-if="flag == 'question'">
-            <Question></Question>
-          </div>
-          <!--导航栏-->
-          <div v-if="flag == 'navigation'">
-            <Navigation v-bind:tab="tab"></Navigation>
-          </div>
+
+          <router-view/>
         </Content>
       </Layout>
     </Layout>
@@ -108,15 +93,24 @@
       },
       //选中折叠菜单
       selectMenu: function (name) {
+        if (name == "rotationChart") {
+          this.$router.push("/rotationChart");
+        }
+        if (name == "course") {
+          this.$router.push("/course");
+        }
+        if (name == "question") {
+          this.$router.push("/question");
+        }
         //遍历
         for (let s of this.navNames) {
           if (s == name) {
-            this.tab = name
-            this.flag = "navigation"
+            // this.tab = name
+            this.$router.replace("/navigation");
+            this.Bus.$emit("my-event-navigation",name);
             return false;
           }
         }
-        this.flag = name
       },
       //页面加载
       load: function () {

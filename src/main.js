@@ -23,7 +23,7 @@ Vue.config.productionTip = false
 
 //全局配置axios，就是网页js请求的url路径
 
-axios.defaults.baseURL = "http://192.168.31.104:8004/"
+axios.defaults.baseURL = "http://localhost:8004/"
 // 解决 options 预请求
 axios.defaults.headers = {
   "Content-Type": "application/x-www-form-urlencoded;charset=utf-8"

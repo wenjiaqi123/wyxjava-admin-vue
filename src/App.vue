@@ -1,41 +1,47 @@
 <template>
   <div id="app">
     <div class="homeScreen">
-      <router-view/>
+      <Admin></Admin>
+      <!--<router-view/>-->
     </div>
   </div>
 </template>
 
 <script>
-export default {
-  name: 'App',
-  mounted() {
-    this.axios.interceptors.request.use(
-      (config) => {
-        if (config.method === "post") {
-          if (config.url.startsWith("/File")) {
-            config.headers["Content-Type"] = "multipart/form-data"
-            return config;
+  import Admin from '@/components/admin/Admin'
+
+  export default {
+    name: 'App',
+    components: {
+      Admin
+    },
+    mounted() {
+      this.axios.interceptors.request.use(
+        (config) => {
+          if (config.method === "post") {
+            if (config.url.startsWith("/File")) {
+              config.headers["Content-Type"] = "multipart/form-data"
+              return config;
+            }
+            //替代 URLSearchParams
+            config.data = this.qs.stringify(config.data);
           }
-          //替代 URLSearchParams
-          config.data = this.qs.stringify(config.data);
+          return config;
+        },
+        (error) => {
+          return Promise.reject(error);
+        })
+      this.axios.interceptors.response.use(
+        (resp) => {
+          //响应正确时
+          return resp;
+        },
+        (error) => {
+          return Promise.reject(error);
         }
-        return config;
-      },
-      (error) => {
-        return Promise.reject(error);
-      })
-    this.axios.interceptors.response.use(
-      (resp) => {
-        //响应正确时
-        return resp;
-      },
-      (error) => {
-        return Promise.reject(error);
-      }
-    )
+      )
+    }
   }
-}
 </script>
 
 <style>
@@ -48,7 +54,7 @@ export default {
     font-size: 16px; /*文字大小*/
   }
 
-  .homeScreen{
+  .homeScreen {
     width: 100%;
     height: 100%;
     margin: 0px auto;

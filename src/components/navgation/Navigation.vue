@@ -1,17 +1,17 @@
 <template>
   <div class="navigation">
-    <!-- 导航navigation
-     如何使用howUse
-     会员权益vip
-     线下辅导teacher
-     建议反馈suggestion
-     程序猿笑话joke
-     码农心声interview
-     996.icuicu
-     爱心love
-     面试offer-->
+    导航navigation
+    如何使用howUse
+    会员权益vip
+    线下辅导teacher
+    建议反馈suggestion
+    程序猿笑话joke
+    码农心声interview
+    996.icuicu
+    爱心love
+    面试offer
     <!-- closable @on-tab-remove="handleTabRemove" -->
-    <Tabs type="card" :value="currentTab"  :animated="false">
+    <Tabs type="card" :value="currentTab" :animated="false">
       <!--
       key 是 当前的tab
       label 是 标题的文字
@@ -27,14 +27,10 @@
   export default {
     name: "",
     components: {},
-    props: {
-      tab: {
-        type: String,
-        required: true
-      }
-    },
     data() {
       return {
+        //接收 导航传过来的 分类名
+        tab: "",
         //导航列表
         menuNavList: [],
         //tab 列表
@@ -105,6 +101,9 @@
     },
     mounted() {
       this.load();
+      this.Bus.$on("my-event-navigation", (data) => {
+        this.tab = data;
+      })
     }
   }
 </script>

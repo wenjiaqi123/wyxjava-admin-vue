@@ -10,7 +10,7 @@ Vue.use(Router)
 
 export default new Router({
   routes: [
-    {path: '/', name: 'Admin', component: Admin},
+    {path: '/Admin', name: 'Admin', component: Admin},
     {path: '/rotationChart', name: 'RotationChart', component: RotationChart},
     {path: '/course', name: 'Course', component: Course},
     {path: '/question', name: 'Question', component: Question},
