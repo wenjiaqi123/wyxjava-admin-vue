@@ -18,11 +18,17 @@
     mounted() {
       this.axios.interceptors.request.use(
         (config) => {
+          //post请求
           if (config.method === "post") {
             if (config.url.startsWith("/File")) {
               config.headers["Content-Type"] = "multipart/form-data"
               return config;
             }
+            //替代 URLSearchParams
+            config.data = this.qs.stringify(config.data);
+          }
+          //put请求
+          if (config.method === "put") {
             //替代 URLSearchParams
             config.data = this.qs.stringify(config.data);
           }
