@@ -50,7 +50,7 @@
 
 <script>
   import RotationChart from '@/components/home/RotationChart'
-  import Course from '@/components/curriculum/Course'
+  import Course from '@/components/curriculum/Subject'
   import Question from '@/components/curriculum/Question'
   import Navigation from '@/components/navgation/Navigation'
 
@@ -97,7 +97,7 @@
           this.$router.push("/rotationChart");
         }
         if (name == "course") {
-          this.$router.push("/course");
+          this.$router.push("/subject");
         }
         if (name == "question") {
           this.$router.push("/question");

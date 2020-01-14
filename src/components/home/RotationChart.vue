@@ -47,8 +47,8 @@
         <!--状态-->
         <template slot-scope="{ row, index }" slot="status">
           <RadioGroup v-if="editIndex === index" v-model="editStatus">
-            <Radio value="1" label="1">在用</Radio>
-            <Radio value="0" label="0">失效</Radio>
+            <Radio label="1">在用</Radio>
+            <Radio label="0">失效</Radio>
           </RadioGroup>
           <span v-else>
             <Button size="small" type="success" v-if="row.status == 1">在用</Button>
@@ -63,13 +63,15 @@
             <Button @click="editIndex = -1">取消</Button>
           </div>
           <div v-else>
-            <Button type="info" size="small" @click="handleEdit(row, index)">操作</Button>
+            <Button type="info" size="small" @click="handleEdit(row, index)">编辑</Button>
           </div>
         </template>
       </Table>
-
-      </Drawer>
     </div>
+
+
+    <br>
+    <Button type="success" size="small" @click="addChart()">添加轮播图</Button>
 
   </div>
 </template>
@@ -80,6 +82,7 @@
     components: {},
     data() {
       return {
+        //数据有效状态
         useFlag: ["在用", "失效"],
         //总数
         total: 0,
@@ -89,8 +92,6 @@
         rows: 10,
         //每页切换的 rows
         showSizer: [10, 20, 30, 40],
-        //抽屉开关
-        drawFlag: false,
         // 表格数据
         columns: [
           //多选
@@ -203,13 +204,13 @@
       },
       //点击图片新窗口打开 URL
       openChartUrl: function (url) {
-        window.open(url,"_blank");
+        window.open(url, "_blank");
       },
       //点击【操作】按钮
       handleEdit(row, index) {
         this.editChartUrl = row.chartUrl;
         this.editWebUrl = row.webUrl;
-        this.editStatus = row.status;
+        this.editStatus = `${row.status}`;
         this.editIndex = index;
       },
       //保存
@@ -239,6 +240,11 @@
           })
           .catch(resp => {
           })
+      },
+      //添加轮播图
+      addChart: function () {
+        console.log(1);
+        this.$router.push("/addChart")
       },
       load: function () {
         this.getChartList()
