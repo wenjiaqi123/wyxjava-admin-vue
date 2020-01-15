@@ -5,6 +5,7 @@ import RotationChart from '@/components/home/RotationChart'
 import AddChart from '@/components/home/AddChart'
 import Subject from '@/components/curriculum/Subject'
 import SubjectDetails from '@/components/curriculum/SubjectDetails'
+import CourseList from '@/components/curriculum/CourseList'
 import Question from '@/components/curriculum/Question'
 import Navigation from '@/components/navgation/Navigation'
 
@@ -17,6 +18,7 @@ export default new Router({
     {path: '/addChart', name: 'AddChart', component: AddChart},
     {path: '/subject', name: 'Subject', component: Subject},
     {path: '/subjectDetails', name: 'SubjectDetails', component: SubjectDetails},
+    {path: '/courseList', name: 'CourseList', component: CourseList},
     {path: '/question', name: 'Question', component: Question},
     {path: '/navigation', name: 'Navigation', component: Navigation},
   ]

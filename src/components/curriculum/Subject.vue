@@ -28,11 +28,11 @@
 
         <!--科目名称-->
         <template slot-scope="{ row, index }" slot="subjectName">
-          <span @click="openSubDetails(row)">{{row.subjectName}}</span>
-          <span style="float: right">
+          <p @click="openSubDetails(row)">{{row.subjectName}}</p>
+          <!--<span style="float: right">
             <Button size="small" type="info">详情</Button>
             <Button size="small" type="warning">列表</Button>
-          </span>
+          </span>-->
         </template>
 
         <!--评分-->
