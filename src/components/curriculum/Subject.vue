@@ -234,7 +234,7 @@
       },
       //打开课程详细页面
       openSubDetails: function (row) {
-        let id = row.id
+        let id = row.id;
         this.$router.push({
           name: "SubjectDetails",
           query: {

@@ -6,6 +6,7 @@ import AddChart from '@/components/home/AddChart'
 import Subject from '@/components/curriculum/Subject'
 import SubjectDetails from '@/components/curriculum/SubjectDetails'
 import CourseList from '@/components/curriculum/CourseList'
+import CourseDetails from '@/components/curriculum/CourseDetails'
 import Question from '@/components/curriculum/Question'
 import Navigation from '@/components/navgation/Navigation'
 
@@ -19,6 +20,7 @@ export default new Router({
     {path: '/subject', name: 'Subject', component: Subject},
     {path: '/subjectDetails', name: 'SubjectDetails', component: SubjectDetails},
     {path: '/courseList', name: 'CourseList', component: CourseList},
+    {path: '/courseDetails', name: 'CourseDetails', component: CourseDetails},
     {path: '/question', name: 'Question', component: Question},
     {path: '/navigation', name: 'Navigation', component: Navigation},
   ]
