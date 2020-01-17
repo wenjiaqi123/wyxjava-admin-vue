@@ -5,25 +5,24 @@
         详情
         <div slot="content">
           <div class="right">
-
+            <!--右侧的 编辑保存按钮-->
             <div class="button">
               <Button size="default" type="success" v-if="!editFlag" @click="goToEdit">编辑</Button>
-              <Button size="default" type="error" v-if="editFlag" @click="saveEdit">保存</Button>
+              <Button size="default" type="success" v-if="editFlag" @click="saveEdit">保存</Button>
+              <div style="margin-top: 2px"></div>
+              <Button size="default" type="info" v-if="editFlag" @click="cancelEdit">取消</Button>
             </div>
 
-            <div class="showPanel" v-if="!editFlag">
+            <!--展示面板-->
+            <div class="showPanel">
+              <!--第一行 标题 评分 课时-->
+              <!--其他行 讲师 qq群 简介-->
               <div class="title">
                 <div>
                   标题 ：
                 </div>
                 <div>
                   讲师 ：
-                </div>
-                <div>
-                  评分 ：
-                </div>
-                <div>
-                  课时 ：
                 </div>
                 <div>
                   qq群 ：
@@ -33,39 +32,89 @@
                 </div>
               </div>
               <div class="text">
-
+                <div class="one">
+                  <!--正常显示-->
+                  <span v-if="!editFlag" class="nameContent">
+                    {{subjectName}}
+                  </span>
+                  <!--编辑显示-->
+                  <Input v-if="editFlag" type="text" style="width: 300px;margin-right: 100px;"
+                         v-model="subjectNameTmp"></Input>
+                  <span class="score">
+                    评分 ：
+                  </span>
+                  <span style="margin-right: 50px" class="scoreContent">
+                    {{subDetails.subScore}}
+                  </span>
+                  <span class="total">
+                    课时 ：
+                  </span>
+                  <span class="totalContent">
+                    {{subDetails.subTotal}}
+                  </span>
+                </div>
+                <div class="teacher">
+                  <!--正常显示-->
+                  <span v-if="!editFlag" v-for="i in subTeacher" class="teacherContent">{{i}}</span>
+                  <!--编辑显示-->
+                  <div v-if="editFlag">
+                    <div v-if="editFlag">
+                    <span v-for="(obj,i) in subTeacherTmp">
+                      <Button size="small" type="error" @click="deTeacher(i)"> × </Button>
+                      <Input type="text" v-model="subTeacherTmp[i]" style="width: 80px;margin-right: 24px;"></Input>
+                    </span>
+                      <Button size="small" type="info" @click="addTeacher"> +</Button>
+                    </div>
+                  </div>
+                </div>
+                <div class="qq">
+                  <!--正常显示-->
+                  <span v-if="!editFlag" v-for="i in qqGroup" class="qqContent">{{i}}</span>
+                  <!--编辑显示-->
+                  <div v-if="editFlag">
+                    <span v-for="(obj,i) in qqGroupTmp">
+                      <Button size="small" type="error" @click="deQQ(i)"> × </Button>
+                      <Input type="text" v-model="qqGroupTmp[i]" style="width: 100px;margin-right: 24px;"></Input>
+                    </span>
+                    <Button size="small" type="info" @click="addQQ"> +</Button>
+                  </div>
+                </div>
+                <div class="introduction">
+                  <!--正常显示-->
+                  <div v-if="!editFlag" class="introductionContent">{{subIntroduction}}</div>
+                  <!--编辑显示-->
+                  <Input
+                    clearble
+                    v-if="editFlag"
+                    v-model="subIntroductionTmp"
+                    maxlength="300"
+                    type="textarea"
+                    :rows="4"
+                    show-word-limit/>
+                </div>
               </div>
             </div>
-
-            <div class="editPanel" v-if="editFlag">
-
-            </div>
-
-            <!--<div>
-              <strong>标题:</strong> {{sub.subjectName}}
-            </div>
-            <div>
-              <strong>讲师:</strong> {{subDetails.subTeacher}}
-            </div>
-
-            <div>
-              <strong>评分:</strong> {{subDetails.subScore}}
-            </div>
-            <div>
-              <strong>课时:</strong> {{subDetails.subTotal}}
-            </div>
-
-            <div>
-              <strong>QQ群:</strong> {{subDetails.qqGroup}}
-            </div>
-            <div>
-              <strong>简介:</strong> {{subDetails.subIntroduction}}
-            </div>-->
           </div>
 
           <!--图片-->
           <div class="left">
-            <img :src="subDetails.subPic">
+            <img v-if="!editFlag" :src="subDetails.subPic">
+
+            <div class="upload" v-if="editFlag">
+              <Input type="text" v-model="editChartUrl" placeholder="网络图片URL"/>
+
+              <!--<div style="margin-top: 10px"></div>-->
+
+              <div class="file" @change="uploadFile($event)">
+                <input type="file" id="myFile" accept="image/jpeg,image/png,image/gif">
+                <label for="myFile">
+                  <img src="../../assets/home/upload.png">
+                  <span>
+                    点我上传 300×165
+                  </span>
+                </label>
+              </div>
+            </div>
           </div>
         </div>
       </Panel>
@@ -97,42 +146,101 @@
         sub: this.$route.params.sub,
         //课程详细
         subDetails: Object,
+        //课程名称
+        subjectName: "",
+        subjectNameTmp: "",
+        //教师
+        subTeacher: [],
+        subTeacherTmp: [],
+        //qq群
+        qqGroup: [],
+        qqGroupTmp: [],
+        //简介
+        subIntroduction: "",
+        subIntroductionTmp: "",
         //折叠面板
-        foldPanel: ["1","2"],
+        foldPanel: ["1", "2"],
         //课程图片
-        subPic: ""
+        subPic: "",
+        formData: {}
       }
     },
     methods: {
       //进入编辑状态
       goToEdit: function () {
+        this.subjectNameTmp = this.subjectName
+        this.subIntroductionTmp = this.subIntroduction
+        this.subTeacherTmp = [].concat(this.subTeacher)
+        this.qqGroupTmp = [].concat(this.qqGroup)
         this.editFlag = true
       },
       //保存编辑
       saveEdit: function () {
+        this.subjectName = this.subjectNameTmp
+        this.subIntroduction = this.subIntroductionTmp
+        this.subTeacher = this.subTeacherTmp
+        this.qqGroup = this.qqGroupTmp
+        console.log(this.subjectNameTmp);
+        console.log(this.subjectName);
         this.editFlag = false
       },
+      //取消编辑
+      cancelEdit: function () {
+        this.subjectNameTmp = ""
+        this.subIntroductionTmp = ""
+        this.subTeacherTmp = []
+        this.qqGroupTmp = []
+        this.editFlag = false
+      },
+      //减少老师
+      deTeacher: function (index) {
+        this.subTeacherTmp.splice(index, 1)
+      },
+      //添加老师
+      addTeacher: function () {
+        let length = this.subTeacherTmp.length;
+        this.$set(this.subTeacherTmp, length, "")
+      },
+      //减少qq
+      deQQ: function (index) {
+        this.qqGroupTmp.splice(index, 1)
+      },
+      //添加qq群
+      addQQ: function () {
+        let length = this.qqGroupTmp.length;
+        this.$set(this.qqGroupTmp, length, "")
+      },
       load: function () {
-        if (this.sub == null) {
-          this.axios.get(`${this.domain.Admin}/subject/subjectDetails/${this.sid}`)
-            .then(resp => {
-              let data = resp.data.data;
-              this.sub = data
-              this.subDetails = this.sub.subjectDetailsDo
-            })
-            .catch(resp => {
-            })
-        } else {
-          //课程图片赋值
-          this.subDetails = this.sub.subjectDetailsDo
-        }
+        this.axios.get(`${this.domain.Admin}/subject/subjectDetails/${this.sid}`)
+          .then(resp => {
+            let data = resp.data.data;
+            this.sub = data
+            this.subDetails = this.sub.subjectDetailsDo
+
+            //赋值 课程名称
+            let subjectName = this.sub.subjectName;
+            this.subjectName = subjectName
+            //赋值 teacher
+            let teacherStr = this.subDetails.subTeacher;
+            let teachers = teacherStr.split(",");
+            this.subTeacher = teachers
+            //赋值 qq群
+            let qqGroupStr = this.subDetails.qqGroup;
+            let qqGroups = qqGroupStr.split(",");
+            this.qqGroup = qqGroups
+            //赋值 简介
+            let subIntroduction = this.subDetails.subIntroduction;
+            this.subIntroduction = subIntroduction
+          })
+          .catch(resp => {
+          })
       }
     },
     created() {
       this.load()
     },
     mounted() {
-      // this.load()
+      this.load()
     }
   }
 </script>
@@ -141,6 +249,13 @@
   /*左侧*/
   .subjectDetails .left img {
     border-radius: 8px;
+    width: 300px;
+    height: 165px;
+  }
+
+  /*左侧*/
+  .subjectDetails .left .upload {
+    border: 1px solid black;
     width: 300px;
     height: 165px;
   }
@@ -156,39 +271,103 @@
     float: right;
   }
 
-  /*展示*/
-  .subjectDetails .right .showPanel {
-    border: 1px solid black;
+  /*右侧 标题讲师.. 盒子*/
+  .subjectDetails .right .showPanel .title {
+    float: left;
+    width: 70px;
   }
 
-  .subjectDetails .right .showPanel .title{
-    border: 1px solid red;
-    width: 60px;
-    min-height: 80px;
-    float: left;
-  }
-  /*文字*/
-  .subjectDetails .right .showPanel .title div{
-    font-size: 14px;
+  /*右侧 标题讲师*/
+  .subjectDetails .right .showPanel .title div {
+    height: 30px;
+    line-height: 30px;
+    font-size: 18px;
+    font-weight: bolder;
     text-align: right;
-
-    height: 24px;
-    line-height: 20px;
-    font-weight: lighter;
-    /*margin-top: 18px;*/
+    margin-bottom: 4px;
   }
 
-  .subjectDetails .right .showPanel .text{
-    border: 1px solid greenyellow;
-    width: 400px;
-    min-height: 80px;
+  /*文本*/
+  .subjectDetails .right .showPanel .text {
     float: left;
+    width: calc(100% - 136px);
   }
 
-  /*编辑*/
-  .subjectDetails .right .editPanel {
-    width: 100%;
-    height: 100%;
+  /*文本每行*/
+  .subjectDetails .right .showPanel .text div {
+    height: 30px;
+    margin-bottom: 4px;
+  }
+
+  /*评分 课时*/
+  .subjectDetails .right .showPanel .text .one .score,
+  .subjectDetails .right .showPanel .text .one .total {
+    height: 30px;
+    line-height: 30px;
+    font-size: 18px;
+    font-weight: bolder;
+  }
+
+  .subjectDetails .right .showPanel .text .one .nameContent {
+    display: inline-block;
+    width: 300px;
+    margin-right: 100px;
+  }
+
+  .subjectDetails .right .showPanel .text .one .nameContent,
+  .subjectDetails .right .showPanel .text .one .scoreContent,
+  .subjectDetails .right .showPanel .text .one .totalContent {
+    color: #FF0000;
+    height: 30px;
+    line-height: 30px;
+    font-size: 18px;
+    font-weight: lighter;
+  }
+
+  /*老师和qq群*/
+  .subjectDetails .right .showPanel .text .teacher .teacherContent,
+  .subjectDetails .right .showPanel .text .qq .qqContent {
+    border-radius: 4px;
+    background-color: #EEEEEE;
+    padding: 1px 4px 0 4px;
+    display: inline-block;
+    height: 30px;
+    line-height: 30px;
+    font-size: 16px;
+    font-weight: lighter;
+    margin-right: 12px;
+  }
+
+  /*内容简介*/
+  .subjectDetails .right .showPanel .text .introduction .introductionContent {
+    font-size: 14px;
+    margin-top: 10px;
+  }
+
+  .file input{
+    height: 0px;
+    width: 0px;
+  }
+
+  .file label{
     border: 1px solid black;
+    /*border: 1px dotted #3399FF;*/
+    width: 300px;
+    height: 100px;
+    display: block;
+    border-radius: 6px;
+
+    line-height: 40px;
+    font-size: 16px;
+    color: #FF0000;
+    text-align: center;
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+  .file img{
+    display: block;
+    width: 50px;
+    height: 50px;
+    margin: 5px auto 0px;
   }
 </style>

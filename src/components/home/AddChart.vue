@@ -183,7 +183,6 @@
     height: 100px;
     display: block;
     border-radius: 6px;
-
     line-height: 40px;
     font-size: 16px;
     color: #FF0000;
