@@ -6,10 +6,13 @@
         show-total
         show-elevator
         show-sizer
+        size="small"
         :page-size-opts="showSizer"
         @on-change="changePage"
         @on-page-size-change="changeRows"/>
     </div>
+
+    <Button type="success" size="small" @click="addSubject()"> 添加课程</Button>
 
     <div style="line-height: 30px;margin: 8px auto 10px 5px">
       <CheckboxGroup v-model="useFlag" @on-change="checkAllGroupChange">
@@ -139,6 +142,10 @@
       }
     },
     methods: {
+      //添加课程
+      addSubject: function () {
+        this.$router.push("/addSubject")
+      },
       //获取轮播图列表
       getSubjectList: function (s = -1) {
         this.axios.get(`${this.domain.Admin}/subject/subjectDetailsList`, {
