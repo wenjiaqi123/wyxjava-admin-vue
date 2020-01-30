@@ -6,10 +6,13 @@
         show-total
         show-elevator
         show-sizer
+        size="small"
         :page-size-opts="showSizer"
         @on-change="changePage"
         @on-page-size-change="changeRows"/>
     </div>
+
+    <Button type="success" size="small" @click="addChart()">添加轮播图</Button>
 
     <div style="line-height: 30px;margin: 8px auto 10px 5px">
       <CheckboxGroup v-model="useFlag" @on-change="checkAllGroupChange">
@@ -68,10 +71,6 @@
         </template>
       </Table>
     </div>
-
-
-    <br>
-    <Button type="success" size="small" @click="addChart()">添加轮播图</Button>
 
   </div>
 </template>
@@ -243,7 +242,6 @@
       },
       //添加轮播图
       addChart: function () {
-        console.log(1);
         this.$router.push("/addChart")
       },
       load: function () {

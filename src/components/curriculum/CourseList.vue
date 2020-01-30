@@ -5,6 +5,8 @@
       <div class="top">∧</div>
     </BackTop>
 
+    <Button type="success" size="small" @click="addCourse()"> 添加课程</Button>
+
     <div style="line-height: 30px;margin: 8px auto 10px 5px">
       <CheckboxGroup v-model="useFlag" @on-change="checkAllGroupChange">
         <Checkbox label="在用"></Checkbox>
@@ -137,6 +139,16 @@
       }
     },
     methods: {
+      //添加课程
+      addCourse: function () {
+        let {href} = this.$router.resolve({
+          name: "AddCourse",
+          query: {
+            sid: this.sid
+          }
+        });
+        window.open(href, '_blank');
+      },
       //获取轮播图列表
       getCourseList: function (s = -1) {
         this.axios.get(`${this.domain.Admin}/course/courseList`, {
@@ -184,7 +196,6 @@
       },
       //打开课程详细页面
       openCourseDetails: function (row) {
-        console.log(row);
         let {href} = this.$router.resolve({
           name: "CourseDetails",
           query: {
