@@ -98,8 +98,10 @@
 
           <!--图片-->
           <div class="left">
+            <!--正常显示-->
             <img v-if="!editFlag" :src="subDetails.subPic">
 
+            <!--编辑状态显示-->
             <div class="upload" v-if="editFlag">
               <Input type="text" v-model="editChartUrl" placeholder="网络图片URL"/>
 
@@ -343,15 +345,14 @@
     font-size: 14px;
     margin-top: 10px;
   }
-
+  /*文件 input样式*/
   .file input{
     height: 0px;
     width: 0px;
   }
 
   .file label{
-    border: 1px solid black;
-    /*border: 1px dotted #3399FF;*/
+    border: 1px dotted #3399FF;
     width: 300px;
     height: 100px;
     display: block;
@@ -361,10 +362,9 @@
     font-size: 16px;
     color: #FF0000;
     text-align: center;
-    padding-left: 8px;
-    padding-right: 8px;
+    margin-left: -1px;
   }
-  .file img{
+  .subjectDetails .left .file img{
     display: block;
     width: 50px;
     height: 50px;
