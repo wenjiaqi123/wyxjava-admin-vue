@@ -1,15 +1,5 @@
 <template>
   <div class="navigation">
-    导航navigation
-    如何使用howUse
-    会员权益vip
-    线下辅导teacher
-    建议反馈suggestion
-    程序猿笑话joke
-    码农心声interview
-    996.icuicu
-    爱心love
-    面试offer
     <!-- closable @on-tab-remove="handleTabRemove" -->
     <Tabs type="card" :value="currentTab" :animated="false">
       <!--
@@ -17,16 +7,72 @@
       label 是 标题的文字
       -->
       <TabPane v-for="obj in tabNavList" :name="obj.menuCode" :key="obj.menuCode" :label="obj.menuName">
-        {{obj}}
+        <!--如何使用-->
+        <div v-if="obj.menuCode === 'howUse'">
+          <HowUse></HowUse>
+        </div>
+
+        <!--会员权益-->
+        <div v-if="obj.menuCode === 'vip'">
+          <Vip></Vip>
+        </div>
+
+        <!--线下辅导-->
+        <div v-if="obj.menuCode === 'teacher'">
+          <Teacher></Teacher>
+        </div>
+
+        <!--建议反馈-->
+        <div v-if="obj.menuCode === 'suggestion'">
+          <Suggestion></Suggestion>
+        </div>
+
+        <!--笑话-->
+        <div v-if="obj.menuCode === 'joke'">
+          <Joke></Joke>
+        </div>
+
+        <!--码农心声-->
+        <div v-if="obj.menuCode === 'interview'">
+          <Interview></Interview>
+        </div>
+
+        <!--996.icu-->
+        <div v-if="obj.menuCode === 'icu'">
+          <Icu></Icu>
+        </div>
+
+        <!--爱心-->
+        <div v-if="obj.menuCode === 'love'">
+          <Love></Love>
+        </div>
+
+        <!--面试-->
+        <div v-if="obj.menuCode === 'offer'">
+          <Offer></Offer>
+        </div>
       </TabPane>
     </Tabs>
   </div>
 </template>
 
 <script>
+  import HowUse from '@/components/navgation/howUse/HowUse'
+  import Vip from '@/components/navgation/vip/Vip'
+  import Teacher from '@/components/navgation/teacher/Teacher'
+  import Suggestion from '@/components/navgation/suggestion/Suggestion'
+  import Joke from '@/components/navgation/joke/Joke'
+  import Interview from '@/components/navgation/interview/Interview'
+  import Icu from '@/components/navgation/icu/Icu'
+  import Love from '@/components/navgation/love/Love'
+  import Offer from '@/components/navgation/offer/Offer'
+  import Wait from '@/components/navgation/wait/Wait'
+
   export default {
     name: "",
-    components: {},
+    components: {
+      HowUse, Vip, Teacher, Suggestion, Joke, Interview, Icu, Love, Offer, Wait
+    },
     data() {
       return {
         //接收 导航传过来的 分类名
@@ -43,6 +89,7 @@
     },
     methods: {
       handleTabRemove(name) {
+
         this["tab" + name] = false;
       },
       //页面加载
@@ -74,6 +121,7 @@
         for (let i of this.menuNavList) {
           if (this.tab == i.menuCode) {
             this.tabNavList.push(i);
+            this.currentTab = this.tab;
           }
         }
       }

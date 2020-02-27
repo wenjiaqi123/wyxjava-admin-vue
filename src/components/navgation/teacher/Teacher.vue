@@ -1,0 +1,81 @@
+<template>
+    <div class="teacher">
+      <!--盒子-->
+      <div class="box" @click="intoTeacher">
+        <span class="bg-pic teacher"></span>
+        <span class="text">线下辅导</span>
+      </div>
+
+      <Input prefix="ios-paper-plane" v-model="url" placeholder="输入URL" style="width: 500px"/>
+
+      <Button size="default" type="success" @click="updateTeacherUrl">保存</Button>
+    </div>
+</template>
+
+<script>
+    export default {
+        name: "",
+        components: {},
+        data() {
+            return {
+              //线下辅导的 链接URL
+              url: ""
+            }
+        },
+        methods: {
+          //跳转链接
+          intoTeacher: function () {
+            window.open(this.url, '_blank');
+          },
+          //保存URL
+          updateTeacherUrl: function () {
+            //TODO
+          },
+          load:function () {
+            //获取URL
+            //TODO
+          }
+        },
+      mounted() {
+        this.load();
+      }
+    }
+</script>
+
+<style scoped>
+  /*字体样式*/
+  .teacher .box {
+    border-radius: 4px;
+    width: 200px;
+    height: 70px;
+    margin: 20px 0px 20px 20px;
+    line-height: 70px;
+    text-align: center;
+    line-height: 70px;
+    font-family: Arial;
+    font-weight: initial;
+    color: #000000;
+    font-size: 20px;
+    background-color: #F3F5F6;
+  }
+
+  .teacher .box .text {
+    display: inline-block;
+    font-size: 20px;
+  }
+
+  .teacher .box .bg-pic {
+    display: inline-block;
+    width: 50px;
+    height: 50px;
+    background-size: 100% 100%;
+    vertical-align: middle;
+    margin-right: 8px;
+  }
+
+  .teacher .box .teacher {
+    width: 40px;
+    height: 40px;
+    background-image: url(../../../assets/aboutUs/teacher.png);
+  }
+</style>
