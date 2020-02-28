@@ -9,17 +9,17 @@
       <TabPane v-for="obj in tabNavList" :name="obj.menuCode" :key="obj.menuCode" :label="obj.menuName">
         <!--如何使用-->
         <div v-if="obj.menuCode === 'howUse'">
-          <HowUse></HowUse>
+          <HowUse v-bind:obj="obj"></HowUse>
         </div>
 
         <!--会员权益-->
         <div v-if="obj.menuCode === 'vip'">
-          <Vip></Vip>
+          <Vip v-bind:obj="obj"></Vip>
         </div>
 
         <!--线下辅导-->
         <div v-if="obj.menuCode === 'teacher'">
-          <Teacher></Teacher>
+          <Teacher v-bind:obj="obj"></Teacher>
         </div>
 
         <!--建议反馈-->
@@ -84,7 +84,7 @@
         //tab 导航列表
         tabNavList: [],
         //当前 tab
-        currentTab: "",
+        currentTab: ""
       }
     },
     methods: {
@@ -157,7 +157,4 @@
 </script>
 
 <style scoped>
-  .navigation {
-    border: 1px solid black;
-  }
 </style>

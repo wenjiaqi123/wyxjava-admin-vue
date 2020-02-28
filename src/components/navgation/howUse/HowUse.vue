@@ -5,7 +5,6 @@
       <span class="bg-pic howUse"></span>
       <span class="text">如何使用</span>
     </div>
-
     <Input prefix="ios-paper-plane" v-model="url" placeholder="输入URL" style="width: 500px"/>
 
     <Button size="default" type="success" @click="updateHowUseUrl">保存</Button>
@@ -16,9 +15,16 @@
   export default {
     name: "",
     components: {},
+    props: {
+      obj: {
+        type: Object,
+        required: true
+      }
+    },
     data() {
       return {
         //如何使用的 链接URL
+        //TODO
         url: ""
       }
     },
@@ -29,11 +35,36 @@
       },
       //保存URL
       updateHowUseUrl: function () {
-        //TODO
+        let data = {
+          navId: this.obj.id,
+          url: this.url
+        }
+        this.axios.put(`${this.domain.Admin}/navgation/navInfo`, data)
+          .then(resp => {
+            let respData = resp.data.data;
+            if (respData.flag) {
+              this.$Notice.success({
+                title: "修改成功"
+              })
+            }
+            this.load()
+          })
+          .catch(resp => {
+          })
       },
-      load:function () {
+      load: function () {
         //获取URL
-        //TODO
+        this.axios.get(`${this.domain.Admin}/navgation/navInfo`, {
+          params: {
+            navId: this.obj.id
+          }
+        })
+          .then(resp => {
+            let data = resp.data.data;
+            this.url = data.url
+          })
+          .catch(resp => {
+          })
       }
     },
     mounted() {

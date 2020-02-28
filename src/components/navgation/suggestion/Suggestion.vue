@@ -23,7 +23,9 @@
 
         <!--反馈类型-->
         <template slot-scope="{ row, index }" slot="suggestType">
-          <span>{{row.suggestType}}</span>
+          <span v-if="row.suggestType == 1">功能故障</span>
+          <span v-if="row.suggestType == 2">优化建议</span>
+          <span v-if="row.suggestType == 3">其他</span>
         </template>
 
         <!--反馈描述-->
@@ -43,8 +45,8 @@
 
         <!--状态-->
         <template slot-scope="{ row, index }" slot="status">
-          <Button size="small" type="success" v-if="row.status == 1">在用</Button>
-          <Button size="small" type="error" v-if="row.status == 0">失效</Button>
+          <Button size="small" type="success" v-if="row.status == 1" @click="handleEdit(row,index)">在用</Button>
+          <Button size="small" type="error" v-if="row.status == 0" @click="handleEdit(row,index)">失效</Button>
         </template>
       </Table>
     </div>
@@ -55,8 +57,8 @@
       title="课程状态"
       @on-ok="modalOk"
       @on-cancel="modalCancel">
-      <p v-if="modalTipFlag">你要删除该反馈吗？</p>
-      <p v-if="!modalTipFlag">你要重提该课程吗？</p>
+      <p v-if="modalTipFlag">你要<span style="color: #FF0000">删除</span>该反馈吗？</p>
+      <p v-if="!modalTipFlag">你要<span style="color: #FF0000">重提</span>该反馈吗？</p>
     </Modal>
   </div>
 </template>
@@ -129,7 +131,15 @@
         //反馈类型
         suggestType: -1,
         //反馈信息状态
-        status: -1
+        status: -1,
+        //Tip开关
+        modalFlag: false,
+        //Tip文字开关
+        modalTipFlag: true,
+        //数据id
+        sid:"",
+        //数据状态
+        sStatus:""
       }
     },
     methods: {
@@ -150,7 +160,7 @@
               } else if (i.status == 0) {
                 i.statusStr = "失效"
               }
-          }
+            }
           })
           .catch((resp) => {
           })
@@ -172,9 +182,51 @@
           this.getSuggestList(1, this.status)
         } else if (list == "优化建议") {
           this.getSuggestList(2, this.status)
-        }else if (list == "其他") {
+        } else if (list == "其他") {
           this.getSuggestList(3, this.status)
         }
+      },
+      //点击 在用/失效 改变状态
+      handleEdit: function (row) {
+        this.sid = row.id;
+        this.sStatus = row.status;
+        if (row.status == 1) {
+          this.modalFlag = true
+          this.modalTipFlag = true
+        }
+        if (row.status == 0) {
+          this.modalFlag = true
+          this.modalTipFlag = false
+        }
+      },
+      //对话框 确定
+      modalOk: function () {
+        if(this.sStatus == 1){
+          this.sStatus = 0
+        }else if(this.sStatus == 0){
+          this.sStatus = 1
+        }
+        let data = {
+          id: this.sid,
+          status: this.sStatus
+        }
+        this.axios.put(`${this.domain.Admin}/suggest/suggestion`, data)
+          .then(resp => {
+            let respData = resp.data.data;
+            if (respData.flag) {
+              this.$Notice.success({
+                title: "修改成功"
+              })
+            }
+            this.getSuggestList(this.suggestType,this.status)
+          })
+          .catch(resp => {
+          })
+        //将对象清空
+        this.modalFlag = false
+      },
+      modalCancel: function () {
+
       },
       load: function () {
         this.getSuggestList()

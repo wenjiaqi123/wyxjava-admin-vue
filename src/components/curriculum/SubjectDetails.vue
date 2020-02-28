@@ -103,7 +103,7 @@
 
             <!--编辑状态显示-->
             <div class="upload" v-if="editFlag">
-              <Input type="text" v-model="editChartUrl" placeholder="网络图片URL"/>
+              <Input type="text" v-model="subDetails.subPic" placeholder="网络图片URL"/>
 
               <!--<div style="margin-top: 10px"></div>-->
 
@@ -163,7 +163,8 @@
         //折叠面板
         foldPanel: ["1", "2"],
         //课程图片
-        subPic: "",
+        picInfo: Object,
+        subPic:"",
         formData: {}
       }
     },
@@ -176,14 +177,93 @@
         this.qqGroupTmp = [].concat(this.qqGroup)
         this.editFlag = true
       },
+      //input框上传文件
+      uploadFile: function (e) {
+        let _this = this;
+        let file = e.target.files[0];
+
+        let fr = new FileReader()
+        fr.onload = function (ev) {
+          let data;
+          if (typeof ev.target.result === "object") {
+            data = window.URL.createObjectURL(new Blob([ev.target.result]))
+          } else {
+            data = ev.target.result;
+          }
+          //赋值给 vueCropper 组件 img
+          _this.formData.imgData = data;
+          //解决每次选择相同文件， input @change 不执行问题
+          event.target.value = "";
+
+          /**
+           * 上传图片
+           */
+          let picData = new FormData();
+          picData.append("file", file);
+          _this.axios.post(`/${_this.domain.File}/file/insertFileGetAllInfo`, picData)
+            .then(resp => {
+              let picInfo = resp.data.data;
+              _this.picInfo = picInfo;
+              _this.subPic = picInfo.fileUrl;
+            })
+            .catch(resp => {
+            })
+        }
+
+        //转化为 文本
+        // fr.readAsText(file);
+        //转化为 Base64
+        // fr.readAsDataURL(file)
+        //转化为 blob
+        fr.readAsArrayBuffer(file);
+      },
       //保存编辑
       saveEdit: function () {
         this.subjectName = this.subjectNameTmp
         this.subIntroduction = this.subIntroductionTmp
         this.subTeacher = this.subTeacherTmp
         this.qqGroup = this.qqGroupTmp
-        console.log(this.subjectNameTmp);
-        console.log(this.subjectName);
+
+        //处理数据格式 老师和qq群
+        let subTeacher = "";
+        for (let i in this.subTeacher) {
+          subTeacher += this.subTeacher[i];
+          subTeacher += ",";
+        }
+        subTeacher = subTeacher.substring(0, subTeacher.length - 1);
+        let qqGroup = "";
+        for (let i in this.qqGroup) {
+          qqGroup += this.qqGroup[i];
+          qqGroup += ",";
+        }
+        qqGroup = qqGroup.substring(0, qqGroup.length - 1);
+
+        //封面图片 如果上传了，就用上传的图片，没有就用之前的
+        let subPic = this.subDetails.subPic
+        if(this.subPic != ""){
+          subPic = this.subPic
+        }
+        console.log(subPic);
+        //发送请求
+        let data = {
+          subjectId: this.sid,
+          subIntroduction: this.subIntroduction,
+          subTeacher: subTeacher,
+          qqGroup: qqGroup,
+          subPic: subPic
+        }
+        this.axios.put(`${this.domain.Admin}/subject/subjectDetails`, data)
+          .then(resp => {
+            let respData = resp.data.data;
+            if (respData.flag) {
+              this.$Notice.success({
+                title: "修改成功"
+              })
+            }
+          })
+          .catch(resp => {
+          })
+        //编辑状态开关
         this.editFlag = false
       },
       //取消编辑
@@ -345,13 +425,14 @@
     font-size: 14px;
     margin-top: 10px;
   }
+
   /*文件 input样式*/
-  .file input{
+  .file input {
     height: 0px;
     width: 0px;
   }
 
-  .file label{
+  .file label {
     border: 1px dotted #3399FF;
     width: 300px;
     height: 100px;
@@ -364,7 +445,8 @@
     text-align: center;
     margin-left: -1px;
   }
-  .subjectDetails .left .file img{
+
+  .subjectDetails .left .file img {
     display: block;
     width: 50px;
     height: 50px;

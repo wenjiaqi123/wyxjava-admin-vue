@@ -1,45 +1,77 @@
 <template>
-    <div class="teacher">
-      <!--盒子-->
-      <div class="box" @click="intoTeacher">
-        <span class="bg-pic teacher"></span>
-        <span class="text">线下辅导</span>
-      </div>
-
-      <Input prefix="ios-paper-plane" v-model="url" placeholder="输入URL" style="width: 500px"/>
-
-      <Button size="default" type="success" @click="updateTeacherUrl">保存</Button>
+  <div class="teacher">
+    <!--盒子-->
+    <div class="box" @click="intoTeacher">
+      <span class="bg-pic teacher"></span>
+      <span class="text">线下辅导</span>
     </div>
+
+    <Input prefix="ios-paper-plane" v-model="url" placeholder="输入URL" style="width: 500px"/>
+
+    <Button size="default" type="success" @click="updateTeacherUrl">保存</Button>
+  </div>
 </template>
 
 <script>
-    export default {
-        name: "",
-        components: {},
-        data() {
-            return {
-              //线下辅导的 链接URL
-              url: ""
-            }
-        },
-        methods: {
-          //跳转链接
-          intoTeacher: function () {
-            window.open(this.url, '_blank');
-          },
-          //保存URL
-          updateTeacherUrl: function () {
-            //TODO
-          },
-          load:function () {
-            //获取URL
-            //TODO
-          }
-        },
-      mounted() {
-        this.load();
+  export default {
+    name: "",
+    components: {},
+    props: {
+      obj: {
+        type: Object,
+        required: true
       }
+    },
+    data() {
+      return {
+        //线下辅导的 链接URL
+        url: ""
+      }
+    },
+    methods: {
+      //跳转链接
+      intoTeacher: function () {
+        window.open(this.url, '_blank');
+      },
+      //保存URL
+      updateTeacherUrl: function () {
+        let data = {
+          navId: this.obj.id,
+          url: this.url
+        }
+        this.axios.put(`${this.domain.Admin}/navgation/navInfo`, data)
+          .then(resp => {
+            let respData = resp.data.data;
+            if (respData.flag) {
+              this.$Notice.success({
+                title: "修改成功"
+              })
+            }
+            this.load()
+          })
+          .catch(resp => {
+          })
+      },
+      load: function () {
+        //获取URL
+        //获取URL
+        this.axios.get(`${this.domain.Admin}/navgation/navInfo`, {
+          params: {
+            navId: this.obj.id
+          }
+        })
+          .then(resp => {
+            let data = resp.data.data;
+            this.url = data.url
+          })
+          .catch(resp => {
+          })
+      }
+    },
+    mounted() {
+      this.load();
     }
+  }
 </script>
 
 <style scoped>
