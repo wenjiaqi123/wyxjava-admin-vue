@@ -10,7 +10,21 @@ module.exports = {
     // Paths
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
-    proxyTable: {},
+    //  /a/b  会代理成  http://localhost:80/a/b
+    proxyTable: {
+      //  / 是请求代称
+      '/':{
+        //真实的请求 URL
+        // target:"http://192.168.31.104:8002",
+        target:"http://localhost:8004",
+        //是否跨域
+        changeOrigin:true,
+        //替换  将 / 替换成 /
+        pathRewrite:{
+          '^/':''   //需要重写的请求路径
+        }
+      }
+    },
 
     // Various Dev Server settings
     host: 'localhost', // can be overwritten by process.env.HOST

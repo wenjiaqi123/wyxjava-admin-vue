@@ -89,7 +89,7 @@
                     v-model="subIntroductionTmp"
                     maxlength="300"
                     type="textarea"
-                    :rows="4"
+                    :rows="3"
                     show-word-limit/>
                 </div>
               </div>
@@ -112,7 +112,7 @@
                 <label for="myFile">
                   <img src="../../assets/home/upload.png">
                   <span>
-                    点我上传 300×165
+                    点我上传【优先】 300×165
                   </span>
                 </label>
               </div>
@@ -243,7 +243,6 @@
         if(this.subPic != ""){
           subPic = this.subPic
         }
-        console.log(subPic);
         //发送请求
         let data = {
           subjectId: this.sid,

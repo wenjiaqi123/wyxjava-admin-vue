@@ -17,8 +17,11 @@
       </div>
 
       <div class="left" @change="uploadFile($event)">
+        <!--input样式去掉-->
         <input type="file" id="myFile" accept="image/jpeg,image/png,image/gif">
+        <!--label样式-->
         <label for="myFile">
+          <!--图片样式-->
           <img src="../../assets/home/upload.png">
           <span>
           点我上传 936×382
@@ -125,7 +128,7 @@
         let webUrl = ""
         if (this.picInfo != null) {
           webUrl = this.picInfo.fileUrl
-        }else{
+        } else {
           webUrl = this.formData.webUrl
         }
         /**
