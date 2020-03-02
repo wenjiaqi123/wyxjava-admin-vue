@@ -14,7 +14,7 @@
       <div class="score">
         <span class="text">课程评分：</span>
         <span v-if="!editFlag" class="score">{{score}}</span>
-        <Input v-if="editFlag" prefix="md-star-half" v-model="scoreTmp" placeholder="输入URL" style="width: 100px"/>
+        <Input v-if="editFlag" prefix="md-star-half" v-model="scoreTmp" placeholder="输入评分" style="width: 100px"/>
       </div>
     </div>
 
@@ -74,6 +74,7 @@
       return {
         //课程Id
         cid: this.$route.query.cid,
+        courseDetailId: 0,
         //视频URL
         videoUrl: "",
         videoUrlTmp: "",
@@ -111,56 +112,53 @@
         this.videoUrl = this.videoUrlTmp
         this.score = this.scoreTmp
         this.dataList = [].concat(this.dataListTmp)
+        for (let i in this.dataList) {
+          this.dataList[i].showOrder = i
+        }
         //更新课程详细信息
         let courseDetail = {
           //课程id
-          id:this.cid,
+          courseId: this.cid,
           //课程评分
-          courseScore:this.score,
+          courseScore: this.score,
           //视频URL
-          courseUrl: this.videoUrl
+          courseUrl: this.videoUrl,
+          //课程资料
+          courseDataVos: this.dataList
         }
         this.axios.post(`${this.domain.Admin}/course/courseDetails`, courseDetail)
           .then((resp) => {
+            let respData = resp.data.data;
+            if (respData.flag) {
+              this.$Notice.success({
+                title: "修改成功"
+              })
+            }
+            this.load()
           })
           .catch((resp) => {
           })
-        //**************************************
-        //更新课程资料信息
-        let courseData = {
-          courseDataVos: this.dataList
-        }
-        this.axios.post(`${this.domain.Admin}/course/courseDataList`, courseData)
-          .then((resp) => {
-          })
-          .catch((resp) => {
-          })
-        //**************************************
         this.editFlag = false
       },
       //取消编辑
       cancelEdit: function () {
         this.editFlag = false
-      }
-      ,
+      },
       //打开资料
       openUrl: function (data) {
         window.open(data.dataUrl, '_blank');
-      }
-      ,
+      },
       //添加资料
       addData: function () {
         let length = this.dataListTmp.length;
         let dataDetail = JSON.parse(JSON.stringify(this.dataDetail));
         dataDetail.courseId = this.cid
         this.$set(this.dataListTmp, length, dataDetail)
-      }
-      ,
+      },
       //减少资料
       subData: function (index) {
         this.dataListTmp.splice(index, 1)
-      }
-      ,
+      },
       //input框上传文件
       uploadFile: function (e) {
         let _this = this;
@@ -200,8 +198,7 @@
         // fr.readAsDataURL(file)
         //转化为 blob
         fr.readAsArrayBuffer(file);
-      }
-      ,
+      },
       load: function () {
         //获取课程信息
         this.axios.get(`${this.domain.Admin}/course/courseDetails`, {
@@ -214,6 +211,7 @@
             //视频URL
             this.videoUrl = data.courseUrl;
             this.score = data.courseScore;
+            this.courseDetailId = data.id
           })
           .catch(resp => {
           })
@@ -230,8 +228,7 @@
           .catch(resp => {
           })
       }
-    }
-    ,
+    },
     mounted() {
       this.load();
     }
@@ -279,7 +276,6 @@
   /*右侧资料框，编辑保存取消等*/
   .courseDetails .right {
     float: right;
-    border: 1px solid black;
     width: calc(100% - 320px);
     height: 180px;
   }
