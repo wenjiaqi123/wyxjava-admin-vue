@@ -25,8 +25,7 @@
               return config;
             }
             //替代 URLSearchParams
-            config.data = this.qs.stringify(config.data);
-            console.log(config.data);
+            config.data = this.qs.stringify(config.data,{arrayFormat: 'indices', allowDots: true});
           }
           //put请求
           if (config.method === "put") {

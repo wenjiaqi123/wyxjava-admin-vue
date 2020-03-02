@@ -61,7 +61,7 @@
 
     <!--讨论-->
     <div class="discuss">
-      撒旦法沙发的{{dataListTmp}}
+      讨论区
     </div>
   </div>
 </template>
@@ -113,23 +113,29 @@
         this.dataList = [].concat(this.dataListTmp)
         //更新课程详细信息
         let courseDetail = {
-          courseUrl: "http://www.baidu.com"
+          //课程id
+          id:this.cid,
+          //课程评分
+          courseScore:this.score,
+          //视频URL
+          courseUrl: this.videoUrl
         }
-        this.axios.put(`${this.domain.Admin}/course/courseDetails`, courseDetail)
+        this.axios.post(`${this.domain.Admin}/course/courseDetails`, courseDetail)
           .then((resp) => {
           })
           .catch((resp) => {
           })
+        //**************************************
         //更新课程资料信息
-        let courseData = new Array();
-        courseData.push(this.dataList[0])
-        this.axios.post(`${this.domain.Admin}/course/courseDataList`, courseData, {
-          headers: {"Content-Type":"application/json;charset=UTF-8"}
-        })
+        let courseData = {
+          courseDataVos: this.dataList
+        }
+        this.axios.post(`${this.domain.Admin}/course/courseDataList`, courseData)
           .then((resp) => {
           })
           .catch((resp) => {
           })
+        //**************************************
         this.editFlag = false
       },
       //取消编辑
@@ -224,7 +230,8 @@
           .catch(resp => {
           })
       }
-    },
+    }
+    ,
     mounted() {
       this.load();
     }
