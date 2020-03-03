@@ -242,7 +242,7 @@
       //打开课程详细页面
       openSubDetails: function (row) {
         let id = row.id;
-        this.$router.push({
+        /*this.$router.push({
           name: "SubjectDetails",
           query: {
             sid: id
@@ -250,7 +250,14 @@
           params: {
             sub: row
           }
-        })
+        })*/
+        let {href} = this.$router.resolve({
+          name: "SubjectDetails",
+          query: {
+            sid: row.id
+          }
+        });
+        window.open(href, '_blank');
       },
       load: function () {
         this.getSubjectList()

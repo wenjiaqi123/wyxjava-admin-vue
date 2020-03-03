@@ -30,7 +30,7 @@
 
         <!--评分-->
         <template slot-scope="{ row, index }" slot="courseScore">
-          <p>{{row.courseDetailsDo.status}}</p>
+          <p>{{row.courseDetailsDo.courseScore}}</p>
         </template>
 
         <!--操作-->

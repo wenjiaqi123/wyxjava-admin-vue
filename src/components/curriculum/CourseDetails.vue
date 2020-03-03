@@ -11,10 +11,17 @@
       </div>
 
       <!--评分框-->
-      <div class="score">
-        <span class="text">课程评分：</span>
-        <span v-if="!editFlag" class="score">{{score}}</span>
-        <Input v-if="editFlag" prefix="md-star-half" v-model="scoreTmp" placeholder="输入评分" style="width: 100px"/>
+      <div class="score" style="padding-left: 40px">
+        <div>
+          <span class="text">课程名称：</span>
+          <span v-if="!editFlag" class="score">{{courseName}}</span>
+          <Input v-if="editFlag" prefix="ios-school" v-model="courseNameTmp" placeholder="输入课程名称" style="width: 300px"/>
+        </div>
+        <div style="margin-top: 20px">
+          <span class="text">课程评分：</span>
+          <span v-if="!editFlag" class="score">{{score}}</span>
+          <Input v-if="editFlag" prefix="md-star-half" v-model="scoreTmp" placeholder="输入评分" style="width: 100px"/>
+        </div>
       </div>
     </div>
 
@@ -75,6 +82,9 @@
         //课程Id
         cid: this.$route.query.cid,
         courseDetailId: 0,
+        //课程名称
+        courseName: "",
+        courseNameTmp: "",
         //视频URL
         videoUrl: "",
         videoUrlTmp: "",
@@ -102,6 +112,7 @@
     methods: {
       //进入编辑状态
       goToEdit: function () {
+        this.courseNameTmp = this.courseName
         this.videoUrlTmp = this.videoUrl
         this.scoreTmp = this.score
         this.dataListTmp = [].concat(this.dataList)
@@ -109,6 +120,7 @@
       },
       //保存编辑
       saveEdit: function () {
+        this.courseName = this.courseNameTmp
         this.videoUrl = this.videoUrlTmp
         this.score = this.scoreTmp
         this.dataList = [].concat(this.dataListTmp)
@@ -117,6 +129,8 @@
         }
         //更新课程详细信息
         let courseDetail = {
+          //课程名称
+          courseName: this.courseName,
           //课程id
           courseId: this.cid,
           //课程评分
@@ -200,6 +214,18 @@
         fr.readAsArrayBuffer(file);
       },
       load: function () {
+        //获取课程信息
+        this.axios.get(`${this.domain.Admin}/course/course`, {
+          params: {
+            id: this.cid
+          }
+        })
+          .then(resp => {
+            let data = resp.data.data;
+            this.courseName = data.courseName
+          })
+          .catch(resp => {
+          })
         //获取课程信息
         this.axios.get(`${this.domain.Admin}/course/courseDetails`, {
           params: {

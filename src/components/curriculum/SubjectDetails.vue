@@ -145,7 +145,7 @@
         //科目id
         sid: this.$route.query.sid,
         //传过来的 课程信息
-        sub: this.$route.params.sub,
+        // sub: this.$route.params.sub,
         //课程详细
         subDetails: Object,
         //课程名称
@@ -245,6 +245,7 @@
         }
         //发送请求
         let data = {
+          subjectName:this.subjectName,
           subjectId: this.sid,
           subIntroduction: this.subIntroduction,
           subTeacher: subTeacher,
