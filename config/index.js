@@ -13,15 +13,14 @@ module.exports = {
     //  /a/b  会代理成  http://localhost:80/a/b
     proxyTable: {
       //  / 是请求代称
-      '/':{
+      '/api':{
         //真实的请求 URL
-        // target:"http://192.168.31.104:8002",
-        target:"http://localhost:8004",
+        target:"http://localhost:18080",
         //是否跨域
         changeOrigin:true,
         //替换  将 / 替换成 /
         pathRewrite:{
-          '^/':''   //需要重写的请求路径
+          '^/api':''   //需要重写的请求路径
         }
       }
     },
@@ -34,7 +33,7 @@ module.exports = {
     notifyOnErrors: true,
     poll: false, // https://webpack.js.org/configuration/dev-server/#devserver-watchoptions-
 
-    
+
     /**
      * Source Maps
      */

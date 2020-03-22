@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
+import Login from '@/components/login/Login'
 import Admin from '@/components/admin/Admin'
 import RotationChart from '@/components/home/RotationChart'
 import AddChart from '@/components/home/AddChart'
@@ -26,7 +27,8 @@ Vue.use(Router)
 
 export default new Router({
   routes: [
-    {path: '/Admin', name: 'Admin', component: Admin},
+    {path: '/login', name: 'Login', component: Login},
+    {path: '/admin', name: 'Admin', component: Admin},
     {path: '/rotationChart', name: 'RotationChart', component: RotationChart},
     {path: '/addChart', name: 'AddChart', component: AddChart},
     {path: '/subject', name: 'Subject', component: Subject},

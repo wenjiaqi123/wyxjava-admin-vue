@@ -1,21 +1,65 @@
 <template>
   <div id="app">
     <div class="homeScreen">
-      <Admin></Admin>
+      <Login v-if="!isLogin" @my-event-login="login"></Login>
+      <Admin v-if="isLogin"></Admin>
       <!--<router-view/>-->
     </div>
   </div>
 </template>
 
 <script>
+  import Vue from 'vue'
+  import Login from '@/components/login/Login'
   import Admin from '@/components/admin/Admin'
+  import {
+    getCookie
+  } from "@/tools/cookie";
 
   export default {
     name: 'App',
     components: {
-      Admin
+      Admin, Login
     },
-    mounted() {
+    data() {
+      return {
+        //是否登录，false未登录
+        isLogin: false
+      }
+    },
+    methods: {
+      login: function (data) {
+        console.log(data);
+        this.isLogin = true;
+      }
+    },
+    mounted: function () {
+      //是否登录
+      const isLogin = getCookie("isLogin");
+      //如果记住密码
+      if (isLogin) {
+        //取出信息，存到 sessionStorage
+        let cookieToken = getCookie("token");
+        let cookieUserInfo = getCookie("userInfo");
+        window.sessionStorage.setItem("isLogin", true);
+        window.sessionStorage.setItem("token", cookieToken);
+        window.sessionStorage.setItem("userInfo", cookieUserInfo);
+      }
+      //从sessionStorage取出信息，放到全局
+      const isLoginSession = window.sessionStorage.getItem("isLogin");
+      if (isLoginSession) {
+        let sessionToken = window.sessionStorage.getItem("token");
+        let sessionUserInfo = window.sessionStorage.getItem("userInfo");
+        //全局对象，token
+        Vue.prototype.isSign = true;
+        Vue.prototype.userInfo = JSON.parse(sessionUserInfo);
+        Vue.prototype.userId = this.userInfo.id;
+        Vue.prototype.token = sessionToken;
+        this.isLogin = true
+      }
+
+
+      //拦截器
       this.axios.interceptors.request.use(
         (config) => {
           //post请求
@@ -25,7 +69,7 @@
               return config;
             }
             //替代 URLSearchParams
-            config.data = this.qs.stringify(config.data,{arrayFormat: 'indices', allowDots: true});
+            config.data = this.qs.stringify(config.data, {arrayFormat: 'indices', allowDots: true});
           }
           //put请求
           if (config.method === "put") {
@@ -39,6 +83,23 @@
         })
       this.axios.interceptors.response.use(
         (resp) => {
+          let data = resp.data;
+          console.log("resp数据");
+          console.log(resp);
+          /*if (data.code == 500) {
+            this.$Notice.error({
+              title: "服务器有点忙哦!"
+            });
+          }
+          if (data.code == 20000) {
+            resp.data = data.data;
+            return resp;
+          }
+          if (data.code == 20002) {
+            this.$Notice.error({
+              title: data.message
+            });
+          }*/
           //响应正确时
           return resp;
         },
