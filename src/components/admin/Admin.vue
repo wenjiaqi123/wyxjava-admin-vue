@@ -30,12 +30,23 @@
       <Layout :style="{background: '#EEEEEE'}">
         <!--右侧的 Header-->
         <Header :style="{padding: 0}" class="layout-header-bar">
-          <!--<Icon @click.native="collapsedSider"
+         <!-- <Icon @click.native="collapsedSider"
                 :class="rotateIcon"
                 :style="{margin: '0 20px'}"
                 type="md-menu"
                 size="24">
           </Icon>-->
+          <div class="welcome">
+
+            <div class="name">
+              <span style="color: red">欢迎您</span>
+              <span style="font-size: 20px">{{this.userInfo.userName}}</span>
+            </div>
+
+            <div class="signOut" @click="signOut">
+
+            </div>
+          </div>
         </Header>
 
         <!--右侧的 内容-->
@@ -53,6 +64,10 @@
   import Course from '@/components/curriculum/Subject'
   import Question from '@/components/curriculum/Question'
   import Navigation from '@/components/navgation/Navigation'
+  import Vue from "vue"
+  import {
+    delCookie
+  } from "@/tools/cookie";
 
   export default {
     name: "",
@@ -90,6 +105,22 @@
       collapsedSider() {
         //改变 Sider 展开-收起状态。
         this.$refs.side.toggleCollapse();
+      },
+      //退出
+      signOut:function(){
+        //删除 sessionStorage
+        window.sessionStorage.clear();
+        //删除 cookie
+        delCookie("isLogin");
+        delCookie("token");
+        delCookie("userInfo");
+        Vue.prototype.isSign = false;
+        Vue.prototype.userInfo = "";
+        Vue.prototype.userId = "";
+        Vue.prototype.token = "";
+        //刷新页面到首页
+        this.$emit("my-event-login", false)
+        window.location.replace("/")
       },
       //选中折叠菜单
       selectMenu: function (name) {
@@ -153,5 +184,24 @@
   .layout-header-bar {
     background: #FFFFFF;
     box-shadow: 0 1px 1px rgba(0, 0, 0, .1);
+  }
+
+  .welcome{
+    float: right;
+  }
+
+  .welcome .name,
+  .welcome .signOut{
+    float: left;
+  }
+
+  .welcome .signOut{
+    border:1px solid #d5d5d5;
+    margin: 14px 30px 0px 40px;
+    width: 40px;
+    height: 40px;
+    background-image: url("../../assets/login/signOut.png");
+    background-size: 100%;
+    background-repeat: no-repeat;
   }
 </style>

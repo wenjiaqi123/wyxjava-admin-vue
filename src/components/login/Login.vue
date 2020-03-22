@@ -92,30 +92,30 @@
           //密码密文 md5
           userPwdClose: this.Md5(this.password)
         }
-        this.axios.post(`/admin/sysUser/selectSysUser`, data,{
-          headers:{
-            // "Content-Type":"application/json;charset=utf-8"
+        this.axios.post(`/admin/sysUser/selectSysUser`, data, {
+          headers: {
+            "Content-Type": "application/json;charset=utf-8"
           }
         })
           .then((resp) => {
-            console.log("我是login");
-            console.log(resp);
-            //登录成功
-            /*this.$emit("my-event-login",true);
-            //存到本地
-            window.sessionStorage.setItem("token", resp.data.token);
-            let userInfo = JSON.stringify(resp.data.sysUser);
-            window.sessionStorage.setItem("userInfo",userInfo);
-
-            window.sessionStorage.setItem("isLogin",true);
-            //存到 cookie
-            setCookie("isLogin", true);
-            setCookie("userInfo", userInfo);
-            setCookie("token", resp.data.token);
-            //存到Vue原型链
-            Vue.prototype.isSign = true;
-            Vue.prototype.userInfo = JSON.parse(resp.data.sysUser);
-            Vue.prototype.userId = this.userInfo.userId;*/
+            let data = resp.data;
+            if (data.code == 20000) {
+              //登录成功
+              this.$emit("my-event-login", true);
+              //存到本地
+              window.sessionStorage.setItem("token", data.data.token);
+              let userInfo = JSON.stringify(data.data.sysUser);
+              window.sessionStorage.setItem("userInfo", userInfo);
+              window.sessionStorage.setItem("isLogin", true);
+              //存到 cookie
+              setCookie("isLogin", true);
+              setCookie("userInfo", userInfo);
+              setCookie("token", data.data.token);
+              //存到Vue原型链
+              Vue.prototype.isSign = true;
+              Vue.prototype.userInfo = JSON.parse(userInfo);
+              Vue.prototype.userId = this.userInfo.userId;
+            }
           })
       }
     },

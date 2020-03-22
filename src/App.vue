@@ -29,8 +29,7 @@
     },
     methods: {
       login: function (data) {
-        console.log(data);
-        this.isLogin = true;
+        this.isLogin = data;
       }
     },
     mounted: function () {
@@ -62,6 +61,11 @@
       //拦截器
       this.axios.interceptors.request.use(
         (config) => {
+          const sessionToken = window.sessionStorage.getItem("token");
+          //如果 token 不为空
+          if (sessionToken != null) {
+            config.headers.Authorization = sessionToken
+          }
           //post请求
           if (config.method === "post") {
             if (config.url.startsWith("/File")) {
@@ -69,7 +73,7 @@
               return config;
             }
             //替代 URLSearchParams
-            config.data = this.qs.stringify(config.data, {arrayFormat: 'indices', allowDots: true});
+            // config.data = this.qs.stringify(config.data, {arrayFormat: 'indices', allowDots: true});
           }
           //put请求
           if (config.method === "put") {
@@ -84,22 +88,17 @@
       this.axios.interceptors.response.use(
         (resp) => {
           let data = resp.data;
-          console.log("resp数据");
-          console.log(resp);
-          /*if (data.code == 500) {
+
+          if (data.code == 500) {
             this.$Notice.error({
               title: "服务器有点忙哦!"
             });
-          }
-          if (data.code == 20000) {
-            resp.data = data.data;
-            return resp;
           }
           if (data.code == 20002) {
             this.$Notice.error({
               title: data.message
             });
-          }*/
+          }
           //响应正确时
           return resp;
         },
