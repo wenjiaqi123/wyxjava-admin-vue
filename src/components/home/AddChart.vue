@@ -99,8 +99,9 @@
            */
           let picData = new FormData();
           picData.append("file", file);
-          _this.axios.post(`/${_this.domain.File}/file/insertFileGetAllInfo`, picData)
+          _this.axios.post(`/file/file/addFile`, picData)
             .then(resp => {
+              alert(resp.data)
               let picInfo = resp.data.data;
               _this.picInfo = picInfo;
             })

@@ -20,7 +20,7 @@
             <template slot="title">
               {{obj.menuName}}
             </template>
-            <MenuItem :name="o.menuCode" v-for="(o,j) in obj.list">
+            <MenuItem :name="o.menuCode" v-for="(o,j) in obj.sysMenuList">
               {{o.menuName}}
             </MenuItem>
           </Submenu>
@@ -85,9 +85,6 @@
         menuList: [],
         //显示面板
         flag: "chart",
-        //导航的菜单
-        // navNames: ["howUse", "vip", "teacher", "suggestion", "joke", "interview", "icu", "interview", "offer"],
-        navNames: [],
         //传给 导航栏
         tab: ""
       }
@@ -146,22 +143,10 @@
       //页面加载
       load: function () {
         //查询菜单列表
-        this.axios.get(`${this.domain.Admin}/menu/menuList`)
+        this.axios.get(`/admin/sysMenu/menus/${this.userInfo.userId}`)
           .then(resp => {
-            let list = resp.data.data.list;
+            let list = resp.data.data;
             this.menuList = list;
-          })
-          .catch(resp => {
-          })
-        //查询导航菜单列表
-        this.axios.get(`${this.domain.Admin}/menu/menuNavList`)
-          .then(resp => {
-            let list = resp.data.data.list;
-            for (let i of list) {
-              this.navNames.push(i.menuCode);
-            }
-          })
-          .catch(resp => {
           })
       }
     },

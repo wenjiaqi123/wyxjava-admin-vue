@@ -158,16 +158,13 @@
     methods: {
       //获取轮播图列表
       getChartList: function (s = -1) {
-        this.axios.get(`${this.domain.Admin}/rotationChart/chartList`, {
+        this.axios.get(`/chart/rotationChart/selectCharts/${this.page}/${this.rows}`, {
           params: {
-            page: this.page,
-            rows: this.rows,
             status: s
           }
         })
           .then((resp) => {
-            let list = resp.data.data.list;
-            this.chartList = list;
+            this.chartList = resp.data.data.list;
             for (let i of this.chartList) {
               if (i.status == 1) {
                 i.statusStr = "在用"
@@ -177,8 +174,6 @@
             }
             let total = resp.data.data.total;
             this.total = total;
-          })
-          .catch((resp) => {
           })
       },
       //改变页码
