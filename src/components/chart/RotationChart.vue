@@ -44,7 +44,7 @@
         <!--点击跳转的URL-->
         <template slot-scope="{ row, index }" slot="webUrl">
           <Input v-if="editIndex === index" type="text" v-model="editWebUrl"/>
-          <span v-else>{{row.webUrl}}</span>
+          <span v-else @click="openChartUrl(row.webUrl)">{{row.webUrl}}</span>
         </template>
 
         <!--状态-->
@@ -158,7 +158,7 @@
     methods: {
       //获取轮播图列表
       getChartList: function (s = -1) {
-        this.axios.get(`/chart/rotationChart/selectCharts/${this.page}/${this.rows}`, {
+        this.axios.get(`/chart/rotationChart/charts/${this.page}/${this.rows}`, {
           params: {
             status: s
           }

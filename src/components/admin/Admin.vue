@@ -60,7 +60,7 @@
 </template>
 
 <script>
-  import RotationChart from '@/components/home/RotationChart'
+  import RotationChart from '@/components/chart/RotationChart'
   import Course from '@/components/curriculum/Subject'
   import Question from '@/components/curriculum/Question'
   import Navigation from '@/components/navgation/Navigation'
