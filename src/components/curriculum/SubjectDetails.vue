@@ -293,11 +293,10 @@
         this.$set(this.qqGroupTmp, length, "")
       },
       load: function () {
-        this.axios.get(`${this.domain.Admin}/subject/subjectDetails/${this.sid}`)
+        this.axios.get(`/course/subject/subject/${this.sid}`)
           .then(resp => {
-            let data = resp.data.data;
-            this.sub = data
-            this.subDetails = this.sub.subjectDetailsDo
+            this.sub = resp.data.data;
+            this.subDetails = this.sub.subjectDetails
 
             //赋值 课程名称
             let subjectName = this.sub.subjectName;
