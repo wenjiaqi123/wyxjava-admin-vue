@@ -92,11 +92,7 @@
           //密码密文 md5
           userPwdClose: this.Md5(this.password)
         }
-        this.axios.post(`/admin/login/selectSysUser`, data, {
-          headers: {
-            "Content-Type": "application/json;charset=utf-8"
-          }
-        })
+        this.axios.post(`/admin/login/selectSysUser`, data)
           .then((resp) => {
             let data = resp.data;
             if (data.code == 20000) {

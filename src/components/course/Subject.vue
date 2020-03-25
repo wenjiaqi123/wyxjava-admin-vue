@@ -57,7 +57,7 @@
         <!--操作-->
         <template slot-scope="{ row, index }" slot="delete">
           <div>
-            <Button type="error" size="small" @click="handleEdit(row, index)">删除</Button>
+            <Button type="error" size="small" @click="deleteSubject(row, index)">删除</Button>
           </div>
         </template>
       </Table>
@@ -283,7 +283,7 @@
         });
         window.open(href, '_blank');
       },
-      handleEdit: function (row, index) {
+      deleteSubject: function (row, index) {
         //开启 对话框
         this.modalDeleteFlag = true;
         //把当前对象赋值给 subject

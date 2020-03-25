@@ -30,7 +30,7 @@ axios.defaults.baseURL = "http://localhost:18080"
 // axios.defaults.baseURL = "http://www.wyxjava.com:80/"
 // 解决 options 预请求
 axios.defaults.headers = {
-  "Content-Type": "application/x-www-form-urlencoded;charset=utf-8"
+  "Content-Type": "application/json;charset=utf-8"
 };
 
 //添加原型对象,组件中可以直接使用this.axios

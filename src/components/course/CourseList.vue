@@ -56,7 +56,7 @@
         <!--删除-->
         <template slot-scope="{ row, index }" slot="delete">
           <div>
-            <Button type="error" size="small" @click="handleEdit(row, index)">删除</Button>
+            <Button type="error" size="small" @click="deleteCourse(row, index)">删除</Button>
           </div>
         </template>
       </Table>
@@ -103,7 +103,7 @@
           {
             title: "序号",
             key: 'showOrder',
-            // type: 'index',
+            type: 'index',
             //可拖拽
             resizable: true,
             align: "center",
@@ -189,8 +189,6 @@
             let list = resp.data.data;
             this.courseList = list;
           })
-          .catch((resp) => {
-          })
       },
       //该变状态
       checkAllGroupChange: function (list) {
@@ -219,12 +217,23 @@
         this.course = row;
         this.index = index;
       },
+      //删除课程
+      deleteCourse: function (row, index) {
+        //开启 对话框
+        this.modalDeleteFlag = true;
+        //把当前对象赋值给 course
+        console.log(row);
+        console.log(row.courseId);
+        this.course = row;
+        this.index = index;
+      },
       //打开课程详细页面
       openCourseDetails: function (row) {
+        console.log(row);
         let {href} = this.$router.resolve({
           name: "CourseDetails",
           query: {
-            cid: row.id
+            cid: row.courseId
           }
         });
         window.open(href, '_blank');
@@ -266,10 +275,11 @@
       modalCancel: function () {
 
       },
+      //删除课程
       modalDeleteOk: function () {
         //id
-        let subjectId = this.subject.subjectId;
-        this.axios.delete(`/course/subject/subject/${subjectId}`)
+        let courseId = this.course.courseId;
+        this.axios.delete(`/course/course/course/${courseId}`)
           .then((resp) => {
             if (resp.data.flag) {
               this.$Notice.success({
@@ -280,7 +290,7 @@
           })
 
         //将对象清空
-        this.subject = null
+        this.course = null
         this.index = -1
       },
       modalDeleteCancel: function () {

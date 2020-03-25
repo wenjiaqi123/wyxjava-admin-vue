@@ -1,29 +1,38 @@
 <template>
-  <div class="addCourse">
+  <div class="courseDetails">
     <!---->
     <div class="right">
-      <!--右侧的保存按钮-->
+      <!--右侧的 编辑保存按钮-->
       <div class="button">
-        <Button size="default" type="success" @click="saveCourse">保存</Button>
+        <Button size="default" type="success" v-if="!editFlag" @click="goToEdit">编辑</Button>
+        <Button size="default" type="success" v-if="editFlag" @click="saveEdit">保存</Button>
+        <div style="margin-top: 2px"></div>
+        <Button size="default" type="info" v-if="editFlag" @click="cancelEdit">取消</Button>
       </div>
 
       <!--评分框-->
       <div class="score" style="padding-left: 40px">
         <div>
           <span class="text">课程名称：</span>
-          <Input prefix="ios-school" v-model="courseName" placeholder="输入课程名称" style="width: 300px"/>
+          <span v-if="!editFlag" class="score">{{courseName}}</span>
+          <Input v-if="editFlag" prefix="ios-school" v-model="courseNameTmp" placeholder="输入课程名称" style="width: 300px"/>
         </div>
         <div style="margin-top: 20px">
           <span class="text">课程评分：</span>
-          <Input prefix="md-star-half" v-model="score" placeholder="输入评分" style="width: 100px"/>
+          <span v-if="!editFlag" class="score">{{score}}</span>
+          <Input v-if="editFlag" prefix="md-star-half" v-model="scoreTmp" placeholder="输入评分" style="width: 100px"/>
         </div>
       </div>
     </div>
 
     <!--课程视频-->
     <div class="video">
-      <div class="warp">
-        <Input prefix="logo-youtube" v-model="videoUrl" placeholder="输入视频URL" style="width: 300px;margin: 10px"/>
+      <!--正常状态显示-->
+      <video v-if="!editFlag" :src="videoUrl" autoplay controls width="320" height="180">
+      </video>
+      <!--编辑状态显示-->
+      <div v-if="editFlag" class="warp">
+        <Input prefix="logo-youtube" v-model="videoUrlTmp" placeholder="输入视频URL" style="width: 300px;margin: 10px"/>
         <div class="upload" @change="uploadFile($event)">
           <input type="file" id="myFile">
           <label for="myFile">
@@ -38,17 +47,28 @@
 
     <!--资料-->
     <div class="data">
-      <!--状态显示-->
-      <div v-for="(i,index) in dataList" class="box">
+      <!--正常状态展示-->
+      <div v-if="!editFlag" v-for="i in dataList" class="box" @click="openUrl(i)">
+        <div class="name">{{i.dataName}}</div>
+        <div class="url">{{i.dataUrl}}</div>
+      </div>
+
+      <!--编辑状态显示-->
+      <div v-if="editFlag" v-for="(i,index) in dataListTmp" class="box">
         <Input prefix="md-paper" v-model="i.dataName" placeholder="输入名称" style="width: 300px"/>
         <Input prefix="ios-paper-plane" v-model="i.dataUrl" placeholder="输入URL" style="width: calc(100% - 400px)"/>
         <Button size="small" type="error" @click="subData(index)"> ×</Button>
         <Button size="small" type="success">↑</Button>
         <Button size="small" type="success">↓</Button>
       </div>
-      <div class="add">
+      <div v-if="editFlag" class="add">
         <Button size="default" type="success" @click="addData">+</Button>
       </div>
+    </div>
+
+    <!--讨论-->
+    <div class="discuss">
+      讨论区
     </div>
   </div>
 </template>
@@ -60,18 +80,25 @@
     data() {
       return {
         //课程Id
-        sid: this.$route.query.sid,
-        //视频URL
-        videoUrl: "",
-        //课程评分
-        score: 5.0,
+        cid: this.$route.query.cid,
+        courseDetailId: 0,
         //课程名称
         courseName: "",
+        courseNameTmp: "",
+        //视频URL
+        videoUrl: "",
+        videoUrlTmp: "",
+        //编辑状态
+        editFlag: false,
+        //课程评分
+        score: "",
+        scoreTmp: "",
         //资料
         dataList: [],
+        dataListTmp: [],
         //单个资料数据
         dataDetail: {
-          "id": "",
+          "courseDataId": "",
           "courseId": 0,
           "dataName": "",
           "dataUrl": "",
@@ -83,58 +110,64 @@
       }
     },
     methods: {
-      saveCourse: function () {
-        if (this.courseName == "" || this.courseName.trim().length == 0) {
-          this.$Notice.error({
-            title: "课程名不能为空"
-          })
-          return false;
-        }
+      //进入编辑状态
+      goToEdit: function () {
+        this.courseNameTmp = this.courseName
+        this.videoUrlTmp = this.videoUrl
+        this.scoreTmp = this.score
+        this.dataListTmp = [].concat(this.dataList)
+        this.editFlag = true
+      },
+      //保存编辑
+      saveEdit: function () {
+        this.courseName = this.courseNameTmp
+        this.videoUrl = this.videoUrlTmp
+        this.score = this.scoreTmp
+        this.dataList = [].concat(this.dataListTmp)
         for (let i in this.dataList) {
           this.dataList[i].showOrder = i
         }
-        let data = {
-          //科目id
-          subjectId: this.sid,
+        //更新课程详细信息
+        let courseDetail = {
           //课程名称
           courseName: this.courseName,
-          //课程视频URL
-          courseUrl: this.videoUrl,
-          //评分
-          courseScore: this.score,
-          //课程资料
-          courseDataVos: this.dataList
+          courseDetails: {
+            //课程评分
+            courseScore: this.score,
+            //视频URL
+            courseUrl: this.videoUrl
+          },
+          courseDataList:this.dataList
         }
-        this.axios.post(`${this.domain.Admin}/course/courseDetailsAndData`, data)
+        this.axios.put(`/course/course/courseAndDetailsAndData/${this.cid}`, courseDetail)
           .then((resp) => {
-            let respData = resp.data.data;
-            if (respData.flag) {
+            if (resp.data.flag) {
               this.$Notice.success({
-                title: "保存成功"
+                title: "修改成功"
               })
-              this.$router.push(
-                {
-                  path:"subjectDetails",
-                  query:{
-                    sid:this.sid
-                  }
-                }
-              )
             }
+            this.load()
           })
-          .catch((resp) => {
-          })
+        this.editFlag = false
+      },
+      //取消编辑
+      cancelEdit: function () {
+        this.editFlag = false
+      },
+      //打开资料
+      openUrl: function (data) {
+        window.open(data.dataUrl, '_blank');
       },
       //添加资料
       addData: function () {
-        let length = this.dataList.length;
+        let length = this.dataListTmp.length;
         let dataDetail = JSON.parse(JSON.stringify(this.dataDetail));
         dataDetail.courseId = this.cid
-        this.$set(this.dataList, length, dataDetail)
+        this.$set(this.dataListTmp, length, dataDetail)
       },
       //减少资料
       subData: function (index) {
-        this.dataList.splice(index, 1)
+        this.dataListTmp.splice(index, 1)
       },
       //input框上传文件
       uploadFile: function (e) {
@@ -176,6 +209,21 @@
         //转化为 blob
         fr.readAsArrayBuffer(file);
       },
+      load: function () {
+        //获取课程信息
+        this.axios.get(`/course/course/courseAndDetailsAndData/${this.cid}`)
+          .then(resp => {
+            let data = resp.data.data;
+            this.courseName = data.courseName;
+            let courseDetails = data.courseDetails;
+            this.videoUrl = courseDetails.courseUrl;
+            this.score = courseDetails.courseScore;
+            this.dataList = data.courseDataList;
+          })
+      }
+    },
+    mounted() {
+      this.load();
     }
   }
 </script>
@@ -187,19 +235,15 @@
     height: 180px;
   }
 
-  .video .warp {
-    background-color: #d5d5d5;
-  }
-
   /*原生 input框*/
-  .addCourse .video .warp input {
+  .courseDetails .video .warp input {
     /*display: inline-block;*/
     height: 0px;
     width: 0px;
   }
 
   /*自定义样式*/
-  .addCourse .video .warp label {
+  .courseDetails .video .warp label {
     border: 1px dotted #3399FF;
     width: 300px;
     height: 100px;
@@ -215,7 +259,7 @@
   }
 
   /*上传图片*/
-  .addCourse .video .warp img {
+  .courseDetails .video .warp img {
     display: block;
     width: 50px;
     height: 50px;
@@ -223,27 +267,27 @@
   }
 
   /*右侧资料框，编辑保存取消等*/
-  .addCourse .right {
+  .courseDetails .right {
     float: right;
     width: calc(100% - 320px);
     height: 180px;
   }
 
   /*右侧编辑保存按钮*/
-  .addCourse .right .button {
+  .courseDetails .right .button {
     margin: 10px 20px 0px 0px;
     float: right;
   }
 
   /*右侧得分box*/
-  .addCourse .right div.score {
+  .courseDetails .right div.score {
     margin-top: 10px;
     width: calc(100% - 100px);
     height: 36px;
   }
 
   /*课程评分*/
-  .addCourse .right div.score span.text {
+  .courseDetails .right div.score span.text {
     display: inline-block;
     line-height: 34px;
     font-size: 16px;
@@ -251,7 +295,7 @@
   }
 
   /*评分*/
-  .addCourse .right div.score span.score {
+  .courseDetails .right div.score span.score {
     display: inline-block;
     line-height: 34px;
     font-size: 18px;
@@ -260,25 +304,47 @@
   }
 
   /*资料*/
-  .addCourse div.data .box {
+  .courseDetails div.data .box {
     margin: 15px 20px 0px 20px;
     height: 30px;
   }
 
   /*资料名称*/
-  .addCourse div.data {
-    margin-top: 50px;
-    padding: 20px 0px;
-    border: 1px dotted black;
+  .courseDetails div.data .box .name {
+    float: left;
+    width: 300px;
+    height: 30px;
+    font-size: 16px;
+    line-height: 30px;
+    background-color: #19be6b;
+    border-radius: 4px;
+    font-family: Arial;
+    color: #EEEEEE;
+    padding-left: 10px;
   }
 
+  /*资料url*/
+  .courseDetails div.data .box .url {
+    float: left;
+    width: calc(100% - 300px);
+    height: 30px;
+    font-size: 16px;
+    line-height: 30px;
+    background-color: #ffe7b8;
+    border-radius: 4px;
+    font-family: Arial;
+    color: #2d43ee;
+    padding-left: 10px;
+  }
+
+
   /*资料添加*/
-  .addCourse div.data .add {
+  .courseDetails div.data .add {
     margin: 15px 20px 0px 20px;
   }
 
   /*讨论区*/
-  .addCourse div.discuss {
+  .courseDetails div.discuss {
     border: 1px solid black;
     margin: 15px 20px 0px 20px;
   }

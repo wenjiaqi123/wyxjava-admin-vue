@@ -131,7 +131,7 @@
 </template>
 
 <script>
-  import CourseList from '@/components/curriculum/CourseList'
+  import CourseList from '@/components/course/CourseList'
 
   export default {
     name: "",
@@ -164,7 +164,7 @@
         foldPanel: ["1", "2"],
         //课程图片
         picInfo: Object,
-        subPic:"",
+        subPic: "",
         formData: {}
       }
     },
@@ -240,28 +240,28 @@
 
         //封面图片 如果上传了，就用上传的图片，没有就用之前的
         let subPic = this.subDetails.subPic
-        if(this.subPic != ""){
+        if (this.subPic != "") {
           subPic = this.subPic
         }
         //发送请求
         let data = {
-          subjectName:this.subjectName,
-          subjectId: this.sid,
-          subIntroduction: this.subIntroduction,
-          subTeacher: subTeacher,
-          qqGroup: qqGroup,
-          subPic: subPic
+          subjectName: this.subjectName,
+          subjectDetails: {
+            subjectDetailsId:this.subDetails.subjectDetailsId,
+            subIntroduction: this.subIntroduction,
+            subTeacher: subTeacher,
+            qqGroup: qqGroup,
+            subPic: subPic
+          }
         }
-        this.axios.put(`${this.domain.Admin}/subject/subjectDetails`, data)
+        this.axios.put(`/course/subject/subjectAndDetails/${this.sid}`, data)
           .then(resp => {
-            let respData = resp.data.data;
-            if (respData.flag) {
+            if (resp.data.flag) {
               this.$Notice.success({
                 title: "修改成功"
               })
             }
-          })
-          .catch(resp => {
+            this.load();
           })
         //编辑状态开关
         this.editFlag = false
@@ -312,8 +312,6 @@
             //赋值 简介
             let subIntroduction = this.subDetails.subIntroduction;
             this.subIntroduction = subIntroduction
-          })
-          .catch(resp => {
           })
       }
     },

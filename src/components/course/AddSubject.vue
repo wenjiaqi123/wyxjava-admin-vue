@@ -31,7 +31,8 @@
               <div class="text">
                 <div class="one">
                   <!--编辑显示-->
-                  <Input type="text" style="width: 300px;margin-right: 100px;" v-model="subjectName" placeholder="课程名"></Input>
+                  <Input type="text" style="width: 300px;margin-right: 100px;" v-model="subjectName"
+                         placeholder="课程名"></Input>
                   <span class="score">
                     评分 ：
                   </span>
@@ -206,21 +207,22 @@
         let data = {
           //课程名称
           subjectName: this.subjectName,
-          //教师
-          subTeacher: subTeacher,
-          //qq群
-          qqGroup: qqGroup,
-          //课程简介
-          subIntroduction: this.subIntroduction,
-          //评分
-          subScore: this.subScore,
-          //课程图片URL
-          subPic: this.subPic
+          subjectDetails: {
+            //教师
+            subTeacher: subTeacher,
+            //qq群
+            qqGroup: qqGroup,
+            //课程简介
+            subIntroduction: this.subIntroduction,
+            //评分
+            subScore: this.subScore,
+            //课程图片URL
+            subPic: this.subPic
+          }
         }
-        this.axios.post(`${this.domain.Admin}/subject/subject`, data)
+        this.axios.post(`/course/subject/subject`, data)
           .then(resp => {
-            let respData = resp.data.data;
-            if (respData.flag) {
+            if (resp.data.flag) {
               this.$Notice.success({
                 title: "保存成功"
               })

@@ -61,8 +61,8 @@
 
 <script>
   import RotationChart from '@/components/chart/RotationChart'
-  import Course from '@/components/curriculum/Subject'
-  import Question from '@/components/curriculum/Question'
+  import Course from '@/components/course/Subject'
+  import Question from '@/components/course/Question'
   import Navigation from '@/components/navgation/Navigation'
   import Vue from "vue"
   import {

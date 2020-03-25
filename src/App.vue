@@ -72,13 +72,15 @@
               config.headers["Content-Type"] = "multipart/form-data"
               return config;
             }
+            config.headers["Content-Type"] = "application/json;charset=UTF-8"
             //替代 URLSearchParams
             // config.data = this.qs.stringify(config.data, {arrayFormat: 'indices', allowDots: true});
           }
           //put请求
           if (config.method === "put") {
+            config.headers["Content-Type"] = "application/json;charset=UTF-8"
             //替代 URLSearchParams
-            config.data = this.qs.stringify(config.data);
+            // config.data = this.qs.stringify(config.data, {arrayFormat: 'indices', allowDots: true});
           }
           return config;
         },
