@@ -55,7 +55,7 @@
         </template>
 
         <!--操作-->
-        <template slot-scope="{ row, index }" slot="handle">
+        <template slot-scope="{ row, index }" slot="delete">
           <div>
             <Button type="error" size="small" @click="handleEdit(row, index)">删除</Button>
           </div>
@@ -139,15 +139,15 @@
             //可拖拽
             resizable: true,
             align: "center",
-            width: 130
+            width: 100
           },
           {
-            title: "编辑",
-            slot: 'handle',
+            title: "删除",
+            slot: 'delete',
             //可拖拽
             resizable: true,
             align: "center",
-            width: 130
+            width: 100
           }
         ],
         //科目数据

@@ -30,11 +30,11 @@
 
         <!--评分-->
         <template slot-scope="{ row, index }" slot="courseScore">
-          <p>{{row.courseDetailsDo.courseScore}}</p>
+          <p>{{row.courseDetails.courseScore}}</p>
         </template>
 
         <!--操作-->
-        <template slot-scope="{ row, index }" slot="handle">
+        <template slot-scope="{ row, index }" slot="order">
           <span v-if="!moveFlag">
             移动到第
             <InputNumber size="small" v-model="row.num" style="width: 70px"></InputNumber>
@@ -52,6 +52,13 @@
           <Button size="small" type="success" v-if="row.status == 1" @click="changeStatus(row, index)">在用</Button>
           <Button size="small" type="error" v-if="row.status == 0" @click="changeStatus(row, index)">失效</Button>
         </template>
+
+        <!--删除-->
+        <template slot-scope="{ row, index }" slot="delete">
+          <div>
+            <Button type="error" size="small" @click="handleEdit(row, index)">删除</Button>
+          </div>
+        </template>
       </Table>
 
       <Modal
@@ -61,6 +68,14 @@
         @on-cancel="modalCancel">
         <p v-if="modalTipFlag">你要下线该课程吗？<span style="color: #FF0000">【慎重下线】</span></p>
         <p v-if="!modalTipFlag">你要上线该课程吗？</p>
+      </Modal>
+
+      <Modal
+        v-model="modalDeleteFlag"
+        title="删除课程"
+        @on-ok="modalDeleteOk"
+        @on-cancel="modalDeleteCancel">
+        <p>你要删除该课程吗？<span style="color: #FF0000">【慎重删除，删除无法找回】</span></p>
       </Modal>
     </div>
   </div>
@@ -109,8 +124,8 @@
             width: 100
           },
           {
-            title: "操作",
-            slot: "handle",
+            title: "排序",
+            slot: "order",
             resizable: true,
             align: "center",
             width: 360
@@ -118,6 +133,14 @@
           {
             title: "状态",
             slot: 'status',
+            //可拖拽
+            resizable: true,
+            align: "center",
+            width: 100
+          },
+          {
+            title: "删除",
+            slot: 'delete',
             //可拖拽
             resizable: true,
             align: "center",
@@ -132,6 +155,8 @@
         modalFlag: false,
         //对话框提示开关
         modalTipFlag: true,
+        //删除对话框开关
+        modalDeleteFlag: false,
         //单个课程对象
         course: null,
         //单个课程对象索引
@@ -149,9 +174,9 @@
         });
         window.open(href, '_blank');
       },
-      //获取轮播图列表
+      //根据课程id获取列表
       getCourseList: function (s = -1) {
-        this.axios.get(`${this.domain.Admin}/course/courseList`, {
+        this.axios.get(`/course/course/courseLists`, {
           params: {
             subjectId: this.sid,
             status: s
@@ -161,7 +186,7 @@
             //加载中 状态
             this.loading = false
             //列表
-            let list = resp.data.data.list;
+            let list = resp.data.data;
             this.courseList = list;
           })
           .catch((resp) => {
@@ -241,7 +266,25 @@
       modalCancel: function () {
 
       },
+      modalDeleteOk: function () {
+        //id
+        let subjectId = this.subject.subjectId;
+        this.axios.delete(`/course/subject/subject/${subjectId}`)
+          .then((resp) => {
+            if (resp.data.flag) {
+              this.$Notice.success({
+                title: "删除成功"
+              })
+            }
+            this.getCourseList()
+          })
 
+        //将对象清空
+        this.subject = null
+        this.index = -1
+      },
+      modalDeleteCancel: function () {
+      },
       //点击移动按钮
       move: function () {
         this.moveFlag = false;
