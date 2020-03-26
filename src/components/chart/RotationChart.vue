@@ -1,6 +1,6 @@
 <template xmlns:https="http://www.w3.org/1999/xhtml">
   <div class="rotationChart">
-    <div style="margin: 8px auto 2px 5px">
+   <!-- <div style="margin: 8px auto 2px 5px">
       <Page
         :total="total"
         show-total
@@ -10,7 +10,7 @@
         :page-size-opts="showSizer"
         @on-change="changePage"
         @on-page-size-change="changeRows"/>
-    </div>
+    </div>-->
 
     <Button type="success" size="small" @click="addChart()">添加轮播图</Button>
 
@@ -49,13 +49,9 @@
 
         <!--状态-->
         <template slot-scope="{ row, index }" slot="status">
-          <RadioGroup v-if="editIndex === index" v-model="editStatus">
-            <Radio label="1">在用</Radio>
-            <Radio label="0">失效</Radio>
-          </RadioGroup>
-          <span v-else>
-            <Button size="small" type="success" v-if="row.status == 1">在用</Button>
-            <Button size="small" type="error" v-if="row.status == 0">失效</Button>
+          <span>
+            <Button size="small" type="success" v-if="row.status == 1" @click="changeStatus(row, index)">在用</Button>
+            <Button size="small" type="error" v-if="row.status == 0" @click="changeStatus(row, index)">失效</Button>
           </span>
         </template>
 
@@ -67,10 +63,28 @@
           </div>
           <div v-else>
             <Button type="info" size="small" @click="handleEdit(row, index)">编辑</Button>
+            <Button type="error" size="small" @click="deleteChart(row, index)">删除</Button>
           </div>
         </template>
       </Table>
     </div>
+
+    <Modal
+      v-model="modalFlag"
+      title="课程状态"
+      @on-ok="modalOk"
+      @on-cancel="modalCancel">
+      <p v-if="modalTipFlag">你要下线该轮播图吗？<span style="color: #FF0000">【慎重下线】</span></p>
+      <p v-if="!modalTipFlag">你要上线该轮播图吗？</p>
+    </Modal>
+
+    <Modal
+      v-model="modalDeleteFlag"
+      title="删除课程"
+      @on-ok="modalDeleteOk"
+      @on-cancel="modalDeleteCancel">
+      <p>你要删除该轮播图吗？<span style="color: #FF0000">【慎重删除，删除无法找回】</span></p>
+    </Modal>
 
   </div>
 </template>
@@ -83,14 +97,6 @@
       return {
         //数据有效状态
         useFlag: ["在用", "失效"],
-        //总数
-        total: 0,
-        //页码
-        page: 1,
-        //每页记录数
-        rows: 10,
-        //每页切换的 rows
-        showSizer: [10, 20, 30, 40],
         // 表格数据
         columns: [
           //多选
@@ -130,7 +136,7 @@
             //可拖拽
             resizable: true,
             align: "center",
-            width: 180
+            width: 120
           },
           {
             title: "操作",
@@ -138,7 +144,7 @@
             //可拖拽
             resizable: true,
             align: "center",
-            width: 180
+            width: 200
           }
         ],
         //轮播图数据
@@ -151,20 +157,29 @@
         editChartUrl: "",
         //第二列轮播图跳转链接
         editWebUrl: "",
-        //第三列状态
-        editStatus: "",
+
+        //对话框开关
+        modalFlag: false,
+        //删除对话框开关
+        modalDeleteFlag: false,
+        //对话框提示开关
+        modalTipFlag: true,
+        //当前轮播图对象
+        rotationChart: null,
+        //当前轮播图对象索引
+        index: -1
       }
     },
     methods: {
       //获取轮播图列表
       getChartList: function (s = -1) {
-        this.axios.get(`/chart/rotationChart/charts/${this.page}/${this.rows}`, {
+        this.axios.get(`/chart/rotationChart/chart`, {
           params: {
             status: s
           }
         })
           .then((resp) => {
-            this.chartList = resp.data.data.list;
+            this.chartList = resp.data.data;
             for (let i of this.chartList) {
               if (i.status == 1) {
                 i.statusStr = "在用"
@@ -175,16 +190,6 @@
             let total = resp.data.data.total;
             this.total = total;
           })
-      },
-      //改变页码
-      changePage: function (page) {
-        this.page = page;
-        this.getChartList()
-      },
-      //改变每页记录数
-      changeRows: function (rows) {
-        this.rows = rows;
-        this.getChartList()
       },
       //该变状态
       checkAllGroupChange: function (list) {
@@ -204,35 +209,99 @@
       handleEdit(row, index) {
         this.editChartUrl = row.chartUrl;
         this.editWebUrl = row.webUrl;
-        this.editStatus = `${row.status}`;
         this.editIndex = index;
+      },
+      //删除
+      deleteChart:function(row,index){
+        //开启 对话框
+        this.modalDeleteFlag = true;
+        //把当前对象赋值给 subject
+        this.rotationChart = row;
+        this.index = index;
+      },
+      //改变状态
+      changeStatus: function (row, index) {
+        let status = row.status;
+        //根据状态显示 对话框提示的文字
+        if (status == 1) {
+          this.modalTipFlag = true
+        }
+        if (status == 0) {
+          this.modalTipFlag = false
+        }
+        //开启 对话框
+        this.modalFlag = true;
+        //把当前对象赋值给 subject
+        this.rotationChart = row;
+        this.index = index;
+      },
+      //对话框 确定
+      modalOk: function () {
+        //id
+        let chartId = this.rotationChart.chartId;
+        //状态
+        let status = this.rotationChart.status;
+        //切换状态
+        if (status == 1) {
+          this.chartList[this.index].status = 0
+          status = 0
+        } else if (status == 0) {
+          this.chartList[this.index].status = 1
+          status = 1
+        }
+        this.axios.put(`/chart/rotationChart/chart/${chartId}/${status}`)
+          .then(resp => {
+            if (resp.data.flag) {
+              this.$Notice.success({
+                title: "修改成功"
+              })
+            }
+            this.getChartList()
+          })
+        //将对象清空
+        this.rotationChart = null
+        this.index = -1
+      },
+      modalCancel: function () {
+      },
+      modalDeleteOk: function () {
+        //id
+        let chartId = this.rotationChart.chartId;
+        this.axios.delete(`/chart/rotationChart/chart/${chartId}`)
+          .then((resp) => {
+            if (resp.data.flag) {
+              this.$Notice.success({
+                title: "删除成功"
+              })
+            }
+            this.getChartList()
+          })
+        //将对象清空
+        this.rotationChart = null
+        this.index = -1
+      },
+      modalDeleteCancel: function () {
       },
       //保存
       handleSave(row, index) {
         this.chartList[index].chartUrl = this.editChartUrl;
         this.chartList[index].webUrl = this.editWebUrl;
-        this.chartList[index].status = this.editStatus;
         this.editIndex = -1;
 
-        //轮播图信息 id
-        let id = this.chartList[index].id
+        //轮播图信息
+        let chartId = this.chartList[index].chartId
         let data = {
-          id: id,
           chartUrl: this.chartList[index].chartUrl,
           webUrl: this.chartList[index].webUrl,
-          status: this.chartList[index].status
         }
-        this.axios.put(`${this.domain.Admin}/rotationChart/chart`, data)
+        this.axios.put(`/chart/rotationChart/chart/${chartId}`, data)
           .then(resp => {
-            let respData = resp.data.data;
-            if (respData.flag) {
+            if (resp.data.flag) {
               this.$Notice.success({
-                title: "保存成功"
+                title: "修改成功"
               })
               this.getChartList()
             }
-          })
-          .catch(resp => {
           })
       },
       //添加轮播图

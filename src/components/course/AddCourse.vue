@@ -4,7 +4,8 @@
     <div class="right">
       <!--右侧的保存按钮-->
       <div class="button">
-        <Button size="default" type="success" @click="saveCourse">保存</Button>
+        <Button size="default" type="success" @click="saveCourse" v-if="saveFlag">保存</Button>
+        <Button size="default" type="default" v-if="!saveFlag">保存</Button>
       </div>
 
       <!--评分框-->
@@ -79,7 +80,9 @@
           "status": 1
         },
         //上传的文件信息
-        fileInfo: null
+        fileInfo: null,
+        //保存幂等
+        saveFlag:true
       }
     },
     methods: {
@@ -107,6 +110,8 @@
           //课程资料
           courseDataList: this.dataList
         }
+        //防止重复提交
+        this.saveFlag = false
         this.axios.post(`/course/course/course`, data)
           .then((resp) => {
             if (resp.data.flag) {
@@ -121,9 +126,8 @@
                   }
                 }
               )
+              this.saveFlag = true
             }
-          })
-          .catch((resp) => {
           })
       },
       //添加资料

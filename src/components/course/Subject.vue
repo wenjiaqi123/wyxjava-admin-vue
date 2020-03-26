@@ -139,7 +139,7 @@
             //可拖拽
             resizable: true,
             align: "center",
-            width: 100
+            width: 120
           },
           {
             title: "删除",
@@ -147,7 +147,7 @@
             //可拖拽
             resizable: true,
             align: "center",
-            width: 100
+            width: 120
           }
         ],
         //科目数据

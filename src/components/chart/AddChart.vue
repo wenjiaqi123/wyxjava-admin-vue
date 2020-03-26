@@ -140,16 +140,18 @@
           webUrl: webUrl,
           status: this.formData.status
         }
-        this.axios.post(`${this.domain.Admin}/rotationChart/chart`, data)
+        this.axios.post(`/chart/rotationChart/chart`, data)
           .then(resp => {
-            let respData = resp.data.data;
-            if (respData.flag) {
+            if (resp.data.flag) {
               this.$Notice.success({
                 title: "保存成功"
               })
+              this.$router.push(
+                {
+                  path:"rotationChart",
+                }
+              )
             }
-          })
-          .catch(resp => {
           })
       }
     }

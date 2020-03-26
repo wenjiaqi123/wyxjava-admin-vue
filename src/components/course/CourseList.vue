@@ -5,7 +5,7 @@
       <div class="top">∧</div>
     </BackTop>
 
-    <Button type="success" size="small" @click="addCourse()"> 添加课程</Button>
+    <Button type="success" size="small" @click="addCourse()"> 添加课时</Button>
 
     <div style="line-height: 30px;margin: 8px auto 10px 5px">
       <CheckboxGroup v-model="useFlag" @on-change="checkAllGroupChange">
@@ -23,7 +23,7 @@
         :columns="columns"
         :data="courseList">
 
-        <!--课程名称-->
+        <!--课时名称-->
         <template slot-scope="{ row, index }" slot="courseName">
           <p @click="openCourseDetails(row)">{{row.courseName}}</p>
         </template>
@@ -63,19 +63,19 @@
 
       <Modal
         v-model="modalFlag"
-        title="课程状态"
+        title="课时状态"
         @on-ok="modalOk"
         @on-cancel="modalCancel">
-        <p v-if="modalTipFlag">你要下线该课程吗？<span style="color: #FF0000">【慎重下线】</span></p>
-        <p v-if="!modalTipFlag">你要上线该课程吗？</p>
+        <p v-if="modalTipFlag">你要下线该课时吗？<span style="color: #FF0000">【慎重下线】</span></p>
+        <p v-if="!modalTipFlag">你要上线该课时吗？</p>
       </Modal>
 
       <Modal
         v-model="modalDeleteFlag"
-        title="删除课程"
+        title="删除课时"
         @on-ok="modalDeleteOk"
         @on-cancel="modalDeleteCancel">
-        <p>你要删除该课程吗？<span style="color: #FF0000">【慎重删除，删除无法找回】</span></p>
+        <p>你要删除该课时吗？<span style="color: #FF0000">【慎重删除，删除无法找回】</span></p>
       </Modal>
     </div>
   </div>
@@ -110,7 +110,7 @@
             width: 100
           },
           {
-            title: "课程名称",
+            title: "课时名称",
             slot: 'courseName',
             resizable: true,
             align: "left",
@@ -147,7 +147,7 @@
             width: 100
           }
         ],
-        //课程数据
+        //课时数据
         courseList: [],
         //移动框 开关
         moveFlag: true,
@@ -157,14 +157,14 @@
         modalTipFlag: true,
         //删除对话框开关
         modalDeleteFlag: false,
-        //单个课程对象
+        //单个课时对象
         course: null,
-        //单个课程对象索引
+        //单个课时对象索引
         index: -1
       }
     },
     methods: {
-      //添加课程
+      //添加课时
       addCourse: function () {
         let {href} = this.$router.resolve({
           name: "AddCourse",
@@ -174,7 +174,7 @@
         });
         window.open(href, '_blank');
       },
-      //根据课程id获取列表
+      //根据课时id获取列表
       getCourseList: function (s = -1) {
         this.axios.get(`/course/course/courseLists`, {
           params: {
@@ -190,7 +190,7 @@
             this.courseList = list;
           })
       },
-      //该变状态
+      //改变状态
       checkAllGroupChange: function (list) {
         this.loading = true
         if (list.length == 2) {
@@ -217,7 +217,7 @@
         this.course = row;
         this.index = index;
       },
-      //删除课程
+      //删除课时
       deleteCourse: function (row, index) {
         //开启 对话框
         this.modalDeleteFlag = true;
@@ -227,9 +227,8 @@
         this.course = row;
         this.index = index;
       },
-      //打开课程详细页面
+      //打开课时详细页面
       openCourseDetails: function (row) {
-        console.log(row);
         let {href} = this.$router.resolve({
           name: "CourseDetails",
           query: {
@@ -241,7 +240,7 @@
       //对话框 确定
       modalOk: function () {
         //id
-        let id = this.course.id;
+        let id = this.course.courseId;
         //状态
         let status = this.course.status;
         //切换状态
@@ -252,14 +251,9 @@
           this.courseList[this.index].status = 1
           status = 1
         }
-        let data = {
-          id: id,
-          status: status
-        }
-        this.axios.put(`${this.domain.Admin}/course/courseStatus`, data)
+        this.axios.put(`/course/course/course/${id}/${status}`)
           .then(resp => {
-            let respData = resp.data.data;
-            if (respData.flag) {
+            if (resp.data.flag) {
               this.$Notice.success({
                 title: "修改成功"
               })
@@ -275,7 +269,7 @@
       modalCancel: function () {
 
       },
-      //删除课程
+      //删除课时
       modalDeleteOk: function () {
         //id
         let courseId = this.course.courseId;

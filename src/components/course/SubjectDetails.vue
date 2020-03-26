@@ -87,7 +87,7 @@
                     clearble
                     v-if="editFlag"
                     v-model="subIntroductionTmp"
-                    maxlength="300"
+                    maxlength="200"
                     type="textarea"
                     :rows="3"
                     show-word-limit/>
