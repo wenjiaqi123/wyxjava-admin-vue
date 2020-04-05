@@ -15,7 +15,7 @@
         <div>
           <span class="text">课程名称：</span>
           <span v-if="!editFlag" class="score">{{courseName}}</span>
-          <Input v-if="editFlag" prefix="ios-school" v-model="courseNameTmp" placeholder="输入课程名称" style="width: 300px"/>
+          <Input v-if="editFlag" prefix="ios-school" v-model="courseNameTmp" placeholder="输入课程名称" style="width: 500px"/>
         </div>
         <div style="margin-top: 20px">
           <span class="text">课程评分：</span>
@@ -55,7 +55,7 @@
 
       <!--编辑状态显示-->
       <div v-if="editFlag" v-for="(i,index) in dataListTmp" class="box">
-        <Input prefix="md-paper" v-model="i.dataName" placeholder="输入名称" style="width: 300px"/>
+        <Input prefix="md-paper" v-model="i.dataName" placeholder="输入名称" style="width: 500px"/>
         <Input prefix="ios-paper-plane" v-model="i.dataUrl" placeholder="输入URL" style="width: calc(100% - 400px)"/>
         <Button size="small" type="error" @click="subData(index)"> ×</Button>
         <Button size="small" type="success">↑</Button>

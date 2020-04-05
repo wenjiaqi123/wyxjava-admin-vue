@@ -12,7 +12,7 @@
       <div class="score" style="padding-left: 40px">
         <div>
           <span class="text">课程名称：</span>
-          <Input prefix="ios-school" v-model="courseName" placeholder="输入课程名称" style="width: 300px"/>
+          <Input prefix="ios-school" v-model="courseName" placeholder="输入课程名称" style="width: 500px"/>
         </div>
         <div style="margin-top: 20px">
           <span class="text">课程评分：</span>
@@ -41,7 +41,7 @@
     <div class="data">
       <!--状态显示-->
       <div v-for="(i,index) in dataList" class="box">
-        <Input prefix="md-paper" v-model="i.dataName" placeholder="输入名称" style="width: 300px"/>
+        <Input prefix="md-paper" v-model="i.dataName" placeholder="输入名称" style="width: 500px"/>
         <Input prefix="ios-paper-plane" v-model="i.dataUrl" placeholder="输入URL" style="width: calc(100% - 400px)"/>
         <Button size="small" type="error" @click="subData(index)"> ×</Button>
         <Button size="small" type="success">↑</Button>

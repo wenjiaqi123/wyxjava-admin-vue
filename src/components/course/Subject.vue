@@ -48,7 +48,13 @@
           <span>{{row.subjectDetails.subTotal}}</span>
         </template>
 
-        <!--操作-->
+        <!--排序-->
+        <template slot-scope="{ row, index }" slot="order">
+          <Button size="small" type="success" @click="moveOne(row,index,1)">上移</Button>
+          <Button size="small" type="success" @click="moveOne(row,index,-1)">下移</Button>
+        </template>
+
+        <!--在用失效-->
         <template slot-scope="{ row, index }" slot="status">
           <Button size="small" type="success" v-if="row.status == 1" @click="changeStatus(row, index)">在用</Button>
           <Button size="small" type="error" v-if="row.status == 0" @click="changeStatus(row, index)">失效</Button>
@@ -134,6 +140,13 @@
             width: 100
           },
           {
+            title: "排序",
+            slot: "order",
+            resizable: true,
+            align: "center",
+            width: 200
+          },
+          {
             title: "状态",
             slot: 'status',
             //可拖拽
@@ -163,7 +176,19 @@
         //单个课程对象
         subject: null,
         //单个课程对象索引
-        index: -1
+        index: -1,
+        //当前课程
+        currentSubject: {
+          subjectId: "",
+          subjectName:"",
+          showOrder: ""
+        },
+        //交换课程
+        exchangeSubject: {
+          subjectId: "",
+          subjectName:"",
+          showOrder: ""
+        }
       }
     },
     methods: {
@@ -184,7 +209,7 @@
             this.subjectList = list;
             //总数
             let total = resp.data.data.total;
-            this.total = total;
+            this.total = Number(total);
           })
       },
       //改变页码
@@ -289,6 +314,68 @@
         //把当前对象赋值给 subject
         this.subject = row;
         this.index = index;
+      },
+
+      moveOne: function (row, index, upOrdown) {
+        //upOrdown 是上移还是下移   上移为1    下移为-1
+        let length = this.subjectList.length;
+        if (index == 0 && upOrdown == 1) {
+          this.$Notice.error({
+            title: "第一条数据不能上移"
+          })
+          return false;
+        }
+        if (index == length - 1 && upOrdown == -1) {
+          this.$Notice.error({
+            title: "最后一条数据不能下移"
+          })
+          return false;
+        }
+
+        //获取当前点击的课程
+        let subject = this.subjectList[index];
+        //被交换的课程
+        let exchangeSubject = this.subjectList[index - upOrdown];
+
+        /**
+         * this.currentSubject  和   this.exchangeSubject 是为了与后台交互
+         */
+        //将当前课程的id  showOrder赋值
+        this.currentSubject.subjectId = subject.subjectId
+        this.currentSubject.subjectName = subject.subjectName
+        this.currentSubject.showOrder = exchangeSubject.showOrder
+        //将交换课程的 id  showOrder赋值
+        this.exchangeSubject.subjectId = exchangeSubject.subjectId
+        this.exchangeSubject.subjectName = exchangeSubject.subjectName
+        this.exchangeSubject.showOrder = subject.showOrder
+
+        /*数组里的当前课程和交换课程的showOrder也改变  这里交换数据的方式是，采用第三个空盒子*/
+        let subjectShowOrder = subject.showOrder
+        subject.showOrder = exchangeSubject.showOrder
+        exchangeSubject.showOrder = subjectShowOrder
+
+        //将第 i 个的位置的课程，设置为 交换后的课程
+        this.$set(this.subjectList, index, exchangeSubject)
+        //将交换后的课程位置的课程，设为当前课程
+        this.$set(this.subjectList, index - upOrdown, subject)
+
+        /*发送交换顺序请求*/
+        let formData = new Array();
+        formData.push(this.currentSubject)
+        formData.push(this.exchangeSubject)
+        this.axios.put(`/course/subject/showOrder`, formData)
+          .then((resp) => {
+            if (resp.data.flag) {
+              this.$Notice.success({
+                title: "排序成功"
+              });
+            }
+            if (!resp.data.flag) {
+              this.$Notice.success({
+                title: "排序失败，请刷新页面后重排"
+              });
+            }
+          })
       },
       load: function () {
         this.getSubjectList()

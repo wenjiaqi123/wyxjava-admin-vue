@@ -2,6 +2,8 @@
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 import Vue from 'vue'
 import App from './App'
+//Vuex
+import {store} from './tools/store'
 import router from './router'
 //axios 请求
 import axios from 'axios'
@@ -21,6 +23,8 @@ import Bus from "@/tools/bus";
 import Auth from "@/tools/authority";
 //图片裁剪
 import VueCropper from "vue-cropper"
+//大文件切片上传
+import uploader from "vue-simple-uploader"
 
 Vue.config.productionTip = false
 
@@ -46,12 +50,27 @@ Vue.prototype.domain = domain;
 Vue.prototype.Bus = Bus;
 //权限
 Vue.prototype.Auth = Auth;
+//Vuex
+Vue.prototype.Store = store;
+
+
+//对原生数组扩展, 在第 i 个后面插入 item
+Array.prototype.insert = function (index, item) {
+  this.splice(index + 1, 0, item);
+}
+
+//对原生数组扩展, 删除数组第 i 个
+Array.prototype.delete = function (index) {
+  this.splice(index, 1);
+}
 
 
 //使用IView样式
 Vue.use(ViewUI)
 //使用VueCropper
 Vue.use(VueCropper)
+//使用uploader
+Vue.use(uploader)
 
 //iView 通知设置
 Vue.prototype.$Notice.config({
@@ -62,7 +81,9 @@ Vue.prototype.$Notice.config({
 /* eslint-disable no-new */
 new Vue({
   el: '#app',
+  store:store,
   router,
+  render: h => h(App),
   components: {App},
   template: '<App/>'
 })

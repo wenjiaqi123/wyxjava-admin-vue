@@ -68,6 +68,7 @@
   import {
     delCookie
   } from "@/tools/cookie";
+  import {getCookie} from "../../tools/cookie";
 
   export default {
     name: "",
@@ -97,6 +98,9 @@
           this.isCollapsed ? 'rotate-icon' : ''
         ];
       },
+      userInfo() {
+        return this.Store.getters.getUserInfo;
+      },
     },
     methods: {
       collapsedSider() {
@@ -111,12 +115,9 @@
         delCookie("isLogin");
         delCookie("token");
         delCookie("userInfo");
-        Vue.prototype.isSign = false;
-        Vue.prototype.userInfo = "";
-        Vue.prototype.userId = "";
-        Vue.prototype.token = "";
+
         //刷新页面到首页
-        this.$emit("my-event-login", false)
+        this.$emit("my-event-app-login", false)
         window.location.replace("/")
       },
       //选中折叠菜单

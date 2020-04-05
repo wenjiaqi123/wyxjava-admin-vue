@@ -81,7 +81,7 @@
                 </div>
                 <div class="introduction">
                   <!--正常显示-->
-                  <div v-if="!editFlag" class="introductionContent">{{subIntroduction}}</div>
+                  <div v-if="!editFlag" class="introductionContent" v-html="subIntroduction">{{subIntroduction}}</div>
                   <!--编辑显示-->
                   <Input
                     clearble
@@ -311,7 +311,9 @@
             this.qqGroup = qqGroups
             //赋值 简介
             let subIntroduction = this.subDetails.subIntroduction;
-            this.subIntroduction = subIntroduction
+            //处理换行符 ↵
+            let s = subIntroduction.replace("\n","<br/>");
+            this.subIntroduction = s
           })
       }
     },

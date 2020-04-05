@@ -4,6 +4,14 @@
       <Login v-if="!isLogin" @my-event-login="login"></Login>
       <Admin v-if="isLogin"></Admin>
       <!--<router-view/>-->
+
+      <!--全局上传组件-->
+      <div style="width: 0px;height: 0px;overflow: hidden">
+        <FileUpload></FileUpload>
+      </div>
+      <div v-if="fileUpFlag">
+        <FileUpload></FileUpload>
+      </div>
     </div>
   </div>
 </template>
@@ -11,6 +19,7 @@
 <script>
   import Vue from 'vue'
   import Login from '@/components/login/Login'
+  import FileUpload from '@/components/file/FileUpload'
   import Admin from '@/components/admin/Admin'
   import {
     getCookie
@@ -19,44 +28,60 @@
   export default {
     name: 'App',
     components: {
-      Admin, Login
+      Admin,
+      Login,
+      FileUpload
     },
     data() {
       return {
         //是否登录，false未登录
-        isLogin: false
+        isLogin: false,
+      }
+    },
+    computed: {
+      fileUpFlag() {
+        return this.Store.getters.getFileUpFlag;
+      },
+      userInfo() {
+        return this.Store.getters.getUserInfo;
       }
     },
     methods: {
       login: function (data) {
         this.isLogin = data;
+      },
+      init: function () {
+        //是否登录
+        const isLogin = getCookie("isLogin");
+        //如果记住密码
+        if (isLogin) {
+          //取出信息，存到 sessionStorage
+          let cookieToken = getCookie("token");
+          let cookieUserInfo = getCookie("userInfo");
+          window.sessionStorage.setItem("isLogin", true);
+          window.sessionStorage.setItem("token", cookieToken);
+          window.sessionStorage.setItem("userInfo", cookieUserInfo);
+        }
+        //从sessionStorage取出信息，放到全局
+        const isLoginSession = window.sessionStorage.getItem("isLogin");
+        if (isLoginSession) {
+          this.Store.commit("setIsLogin", true);
+          this.Store.commit("setToken", window.sessionStorage.getItem("token"));
+          this.Store.commit("setUserInfo", JSON.parse(window.sessionStorage.getItem("userInfo")));
+          this.Store.commit("setUserId", this.userInfo.userId);
+
+          //直接登录
+          this.isLogin = true;
+        }
       }
     },
-    mounted: function () {
-      //是否登录
-      const isLogin = getCookie("isLogin");
-      //如果记住密码
-      if (isLogin) {
-        //取出信息，存到 sessionStorage
-        let cookieToken = getCookie("token");
-        let cookieUserInfo = getCookie("userInfo");
-        window.sessionStorage.setItem("isLogin", true);
-        window.sessionStorage.setItem("token", cookieToken);
-        window.sessionStorage.setItem("userInfo", cookieUserInfo);
-      }
-      //从sessionStorage取出信息，放到全局
-      const isLoginSession = window.sessionStorage.getItem("isLogin");
-      if (isLoginSession) {
-        let sessionToken = window.sessionStorage.getItem("token");
-        let sessionUserInfo = window.sessionStorage.getItem("userInfo");
-        //全局对象，token
-        Vue.prototype.isSign = true;
-        Vue.prototype.userInfo = JSON.parse(sessionUserInfo);
-        Vue.prototype.userId = this.userInfo.id;
-        Vue.prototype.token = sessionToken;
-        this.isLogin = true
-      }
+    mounted() {
+      this.init();
 
+      //监听，刷新 app 组件
+      this.Bus.$on("my-event-app-login", (data) => {
+        this.login(data);
+      });
 
       //拦截器
       this.axios.interceptors.request.use(

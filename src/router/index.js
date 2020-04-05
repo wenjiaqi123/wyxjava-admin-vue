@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import Login from '@/components/login/Login'
+import FileUpload from '@/components/file/FileUpload'
 import Admin from '@/components/admin/Admin'
 import RotationChart from '@/components/chart/RotationChart'
 import AddChart from '@/components/chart/AddChart'
@@ -28,6 +29,7 @@ Vue.use(Router)
 export default new Router({
   routes: [
     {path: '/login', name: 'Login', component: Login},
+    {path: '/fileUpload', name: 'FileUpload', component: FileUpload},
     {path: '/admin', name: 'Admin', component: Admin},
     {path: '/rotationChart', name: 'RotationChart', component: RotationChart},
     {path: '/addChart', name: 'AddChart', component: AddChart},

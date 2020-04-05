@@ -94,23 +94,40 @@
         }
         this.axios.post(`/admin/login/selectSysUser`, data)
           .then((resp) => {
-            let data = resp.data;
-            if (data.code == 20000) {
-              //登录成功
-              this.$emit("my-event-login", true);
+            if (resp.data.flag) {
+              //响应数据
+              let respData = resp.data.data;
+              //设置本地token
+              let token = respData.token;
+              //设置本地用户
+              let sysUser = respData.sysUser;
+              //将后台的数据前端本地化，后台修改字段，前台只要修改这里即可
+              let user = {
+                userId: sysUser.userId,
+                userName: sysUser.userName,
+                iphoneNo: sysUser.iphoneNo,
+              }
+              //将用户对象信息 字符串化
+              let userInfo = JSON.stringify(user);
               //存到本地
-              window.sessionStorage.setItem("token", data.data.token);
-              let userInfo = JSON.stringify(data.data.sysUser);
-              window.sessionStorage.setItem("userInfo", userInfo);
               window.sessionStorage.setItem("isLogin", true);
+              window.sessionStorage.setItem("token", token);
+              window.sessionStorage.setItem("userInfo", userInfo);
+
               //存到 cookie
               setCookie("isLogin", true);
+              setCookie("token", token);
               setCookie("userInfo", userInfo);
-              setCookie("token", data.data.token);
-              //存到Vue原型链
-              Vue.prototype.isSign = true;
-              Vue.prototype.userInfo = JSON.parse(userInfo);
-              Vue.prototype.userId = this.userInfo.userId;
+
+              //存到Vuex
+              this.Store.commit("setIsLogin", true);
+              this.Store.commit("setToken", token);
+              this.Store.commit("setUserInfo", user);
+              this.Store.commit("setUserId", user.userId);
+
+              //登录成功
+              this.Bus.$emit("my-event-app-login", true);
+              this.Bus.$emit("my-event-global-uploader", true);
             }
           })
       }
