@@ -1,41 +1,16 @@
 <template>
   <div class="global-uploader">
     <!--上传-->
-    <!--
-      参数：
-          options：      具体字段参考 data中的注释
-          autoStart:     默认 true 是否选择文件后自动开始上传
-      事件：
-          @upload-start()                     开始上传
-          @file-added(file,fileList)          添加了一个文件，一般用做文件校验，如果给 file或者fileList 增加 ignored属性为true的话就会被过滤掉
-          @file-success()                     文件上传成功回调
-          @file-progress()                    文件进度的回调 ，上传过程会不断触发 progress 上传进度的回调
-          @file-error()                       文件上传失败回调
-          @file-removed(file)                 移除一个文件
-          @files-submitted(files,fileList)    所选择的文件添加到上传队列后触发
-     -->
     <uploader
       class="uploader-box"
       ref="uploader"
-      :options="options"
       :autoStart="false"
-      @upload-start="onStartUpload"
-      @file-added="onFileAdded"
+      :options="options"
       @file-success="onFileSuccess"
-      @file-progress="onFileProgress"
-      @file-error="onFileError"
-      @file-removed="onFileRemoved"
-      @files-submitted="onFilesSubmitted">
+      @file-error="onFileError">
 
-
-      <!--点选上传文件按钮-->
-      <!--
-        参数：
-        directory = {Boolean}   默认false ，是否文件夹上传
-        single = {Boolean}      默认false，如果为true，每次只能选择一个文件
-        attrs = {Object}        默认{}，添加到 input 元素上的额外属性
-      -->
-      <!--<uploader-btn>选择文件</uploader-btn>-->
+      <!--不支持HTML5 File API 的时候会显示-->
+      <uploader-unsupport></uploader-unsupport>
 
       <!--拖拽上传区域-->
       <uploader-drop>
@@ -47,27 +22,22 @@
           <img src="../../assets/home/upload.png">
 
           <uploader-btn>选择文件</uploader-btn>
-
           <uploader-btn :directory="true">选择文件夹</uploader-btn>
         </div>
       </uploader-drop>
 
       <!--文件/文件夹 列表，用于展示-->
-      <uploader-list></uploader-list>
-
-      <!--文件列表 没有文件夹概念-->
-      <!--<uploader-files></uploader-files>-->
-
-      <!--文件/文件夹 单个组件-->
-      <!--
-        参数：
-        file = {Uploader.file}    封装的文件实例
-        list = {Boolean}          如果是在 uploader-list中使用，设置为 true
-      -->
-      <!--<uploader-file></uploader-file>-->
-
-      <!--不支持HTML5 File API 的时候会显示-->
-      <uploader-unsupport></uploader-unsupport>
+      <uploader-list>
+        <!--<div slot-scope="props">
+          <div v-for="i in props.fileList">
+            <uploader-file :list="true" :file="i">
+              <div slot-scope="aa">
+                <span style="color: red">{{aa.status}}</span>
+              </div>
+            </uploader-file>
+          </div>
+        </div>-->
+      </uploader-list>
 
     </uploader>
   </div>
@@ -75,9 +45,11 @@
 
 <script>
   //参考文档
+  //https://github.com/simple-uploader/vue-uploader/blob/master/README_zh-CN.md
+  //https://github.com/simple-uploader/Uploader/blob/develop/README_zh-CN.md#%E4%BA%8B%E4%BB%B6
+  //https://github.com/simple-uploader/Uploader/blob/develop/README_zh-CN.md
   //https://www.cnblogs.com/xiahj/p/vue-simple-uploader.html
   //https://blog.csdn.net/qq_26641781/article/details/84024194
-  //https://github.com/simple-uploader/Uploader/blob/develop/README_zh-CN.md
 
   export default {
     name: "",
@@ -86,42 +58,24 @@
       return {
         //需要传给后台的附加参数
         params: {},
+        file:{
+          fileId:""
+        },
         options: {
           //#########  每一块必有属性  ##############################
           //上传目标URL地址
-          target: 'http://localhost:18080/file',
-
-          //每个块的唯一标识
-          identifier:"",
-          //文件总大小
-          totalSize:"",
+          target: 'http://localhost:18080/file/bFile/chunk',
+          testChunks: false,
           //分块大小
-          chunkSize: "2048000",
-          //当前块的大小，实际大小
-          currentChunkSize:"",
-          //当前块的次序，第一个块是 1，注意不是从 0 开始的
-          chunkNumber: 1,
-          //文件被分成的总数
-          totalChunks:"",
-
-          //文件名
-          filename:"",
-          //文件夹上传的时候，文件的相对路径属性
-          relativePath:"",
+          chunkSize: "1048576",
           //########################################################
-
           //最大自动失败重试上传次数
-          maxChunkRetries: 3,
-          //是否开启服务器分片校验
-          testChunks: true,
-          // 服务器分片校验函数，秒传及断点续传基础
-          headers: {
-            // 在header中添加的验证 Authorization
-            Authorization: window.sessionStorage.getItem("token")
-          }
+          maxChunkRetries: 2,
         },
         //文件类型
-        attrs: {accept: '*/*'},
+        attrs: {
+          accept: '*/*'
+        },
       }
     },
     methods: {
@@ -130,35 +84,38 @@
         //关闭文件上传框
         this.Store.commit("setFileUpFlag", false);
       },
-      //开始上传
-      onStartUpload: function () {
-        console.log("开始上传方法执行");
-      },
-      //添加了一个文件，
-      onFileAdded: function (file, fileList) {
-        console.log(1111);
-        console.log(file);
-        console.log(fileList);
+      /**
+       * 文件上传成功回调
+       * rootFile   成功上传后文件说是有的根 Uploader.File 对象
+       * file       当前成功的 Uploader.File 对象
+       * response   服务端的响应，字符串，需要解析 let resp = JSON.parse(response);
+       * chunk      Uploader.Chunk 对象，该文件的最后一个块， chunk.xhr.status就是该块的响应码
+       */
+      onFileSuccess: function (rootFile, file, response, chunk) {
+        //file.uniqueIdentifier 文件的唯一id
+        //file.chunks           文件的块数组
+        let resp = JSON.parse(response);
+
+        let data = {
+          identifier:file.uniqueIdentifier,
+          totalChunks:file.chunks.length
+        }
+        this.axios.post(`file/bFile/merge`, data)
+          .then((resp) => {
+            if(resp.data.flag){
+              this.file.fileId = resp.data.data
+            }
+          })
       },
       /**
-       * 文件上传成功后，在上传完成回调里，
-       * 通过服务端返回的 needMerge【与后台协商】 字段，来判断是否需要再发送合并分片的请求
-       * 如果该字段为 true ，则需要给后台发哦送你各一个请求合并的请求，否则直接上传成功
+       * 文件上传失败回调
        */
-      onFileSuccess: function () {
-      },
-      //文件进度的回调 ，上传过程会不断触发 progress 上传进度的回调
-      onFileProgress() {
-      },
-      //文件上传失败回调
-      onFileError: function () {
-        alert();
-      },
-      //移除一个文件
-      onFileRemoved: function (file) {
-      },
-      //所选择的文件添加到上传队列后触发
-      onFilesSubmitted: function (file, fileList) {
+      onFileError: function (rootFile, file, response, chunk) {
+        this.$Notice.error({
+          title: `上传失败`,
+          desc: `${file.name}`,
+          duration: 5
+        })
       },
     },
     mounted() {
@@ -169,12 +126,6 @@
 
         //打开文件上传开关
         this.Store.commit("setFileUpFlag", true);
-
-        //因为该组件是做的一个全局组件，所以将 选择文件 的按钮隐藏掉
-        /*if (this.$refs.uploadBtn) {
-          // 这里相当于用代码完成了用户点击事件，等于用户点击了  选择文件
-          document.getElementById("global-uploader-btn").click();
-        }*/
       });
     }
   }

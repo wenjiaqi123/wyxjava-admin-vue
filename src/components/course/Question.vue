@@ -11,6 +11,7 @@
 </template>
 
 <script>
+
   export default {
     name: "",
     components: {},
@@ -26,9 +27,11 @@
       //上传文件
       uploadBigFile: function () {
         //兄弟组件传值，
-        this.Bus.$emit("my-event-global-uploader", {
+       /* this.Bus.$emit("my-event-global-uploader", {
           superiorID: this.superiorID
-        });
+        });*/
+
+        this.Bus.$emit("my-event-file-small-upload", {});
       }
     }
   }

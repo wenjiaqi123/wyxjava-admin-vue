@@ -8,6 +8,7 @@
       <!--全局上传组件-->
       <div style="width: 0px;height: 0px;overflow: hidden">
         <FileUpload></FileUpload>
+        <FileSmall></FileSmall>
       </div>
       <div v-if="fileUpFlag">
         <FileUpload></FileUpload>
@@ -20,6 +21,7 @@
   import Vue from 'vue'
   import Login from '@/components/login/Login'
   import FileUpload from '@/components/file/FileUpload'
+  import FileSmall from '@/components/file/FileSmall'
   import Admin from '@/components/admin/Admin'
   import {
     getCookie
@@ -30,7 +32,8 @@
     components: {
       Admin,
       Login,
-      FileUpload
+      FileUpload,
+      FileSmall
     },
     data() {
       return {

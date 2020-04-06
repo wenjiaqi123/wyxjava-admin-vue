@@ -16,17 +16,18 @@
         <img :src="formData.imgData">
       </div>
 
-      <div class="left" @change="uploadFile($event)">
+<!--      <div class="left" @change="uploadFile($event)">-->
+      <div class="left" @click="uploadFile()">
         <!--input样式去掉-->
-        <input type="file" id="myFile" accept="image/jpeg,image/png,image/gif">
+<!--        <input type="file" id="myFile" accept="image/jpeg,image/png,image/gif">-->
         <!--label样式-->
-        <label for="myFile">
+<!--        <label for="myFile">-->
           <!--图片样式-->
           <img src="../../assets/home/upload.png">
           <span>
           点我上传 936×382
         </span>
-        </label>
+<!--        </label>-->
       </div>
     </div>
 
@@ -76,46 +77,8 @@
       }
     },
     methods: {
-      //input框上传文件
-      uploadFile: function (e) {
-        let _this = this;
-        let file = e.target.files[0];
-
-        let fr = new FileReader()
-        fr.onload = function (ev) {
-          let data;
-          if (typeof ev.target.result === "object") {
-            data = window.URL.createObjectURL(new Blob([ev.target.result]))
-          } else {
-            data = ev.target.result;
-          }
-          //赋值给 vueCropper 组件 img
-          _this.formData.imgData = data;
-          //解决每次选择相同文件， input @change 不执行问题
-          event.target.value = "";
-
-          /**
-           * 上传图片
-           */
-          let picData = new FormData();
-          picData.append("file", file);
-          _this.axios.post(`/file/file/addFile`, picData)
-            .then(resp => {
-              alert(resp.data)
-              let picInfo = resp.data.data;
-              _this.picInfo = picInfo;
-            })
-            .catch(resp => {
-            })
-
-        }
-
-        //转化为 文本
-        // fr.readAsText(file);
-        //转化为 Base64
-        // fr.readAsDataURL(file)
-        //转化为 blob
-        fr.readAsArrayBuffer(file);
+      uploadFile:function(){
+        this.Bus.$emit("my-event-file-small-upload",{})
       },
       //保存轮播图
       insertChart: function () {
@@ -154,6 +117,14 @@
             }
           })
       }
+    },
+    mounted() {
+      this.Bus.$on("my-event-file-info", (data)=>{
+        let ev = data.ev;
+        let file = data.file;
+        let fileInfo = data.fileInfo;
+        alert(fileInfo)
+      });
     }
   }
 </script>
@@ -183,7 +154,8 @@
   }
 
   /*自定义样式*/
-  .center .left label {
+  /*.center .left label {*/
+  .center .left{
     border: 1px dotted #3399FF;
     width: 300px;
     height: 100px;
