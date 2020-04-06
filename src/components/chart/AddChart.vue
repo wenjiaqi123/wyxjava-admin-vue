@@ -16,18 +16,12 @@
         <img :src="formData.imgData">
       </div>
 
-<!--      <div class="left" @change="uploadFile($event)">-->
       <div class="left" @click="uploadFile()">
-        <!--input样式去掉-->
-<!--        <input type="file" id="myFile" accept="image/jpeg,image/png,image/gif">-->
-        <!--label样式-->
-<!--        <label for="myFile">-->
-          <!--图片样式-->
-          <img src="../../assets/home/upload.png">
-          <span>
+        <!--图片样式-->
+        <img src="../../assets/home/upload.png">
+        <span>
           点我上传 936×382
         </span>
-<!--        </label>-->
       </div>
     </div>
 
@@ -77,8 +71,8 @@
       }
     },
     methods: {
-      uploadFile:function(){
-        this.Bus.$emit("my-event-file-small-upload",{})
+      uploadFile: function () {
+        this.Bus.$emit("my-event-file-small-upload", {})
       },
       //保存轮播图
       insertChart: function () {
@@ -111,7 +105,7 @@
               })
               this.$router.push(
                 {
-                  path:"rotationChart",
+                  path: "rotationChart",
                 }
               )
             }
@@ -119,11 +113,10 @@
       }
     },
     mounted() {
-      this.Bus.$on("my-event-file-info", (data)=>{
+      this.Bus.$on("my-event-file-info", (data) => {
         let ev = data.ev;
         let file = data.file;
         let fileInfo = data.fileInfo;
-        alert(fileInfo)
       });
     }
   }
@@ -146,16 +139,10 @@
     height: 114.6px;
   }
 
-  /*原生 input框*/
-  .center .left input {
-    /*display: inline-block;*/
-    height: 0px;
-    width: 0px;
-  }
 
   /*自定义样式*/
   /*.center .left label {*/
-  .center .left{
+  .center .left {
     border: 1px dotted #3399FF;
     width: 300px;
     height: 100px;

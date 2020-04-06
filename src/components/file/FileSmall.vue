@@ -61,7 +61,7 @@
           _this.axios.post(`/file/sFile/addFile`, formData)
             .then(resp => {
               if (resp.data.flag) {
-                this.Bus.$emit("my-event-file-info", {
+                _this.Bus.$emit("my-event-file-info", {
                   ev: ev,
                   file: file,
                   fileInfo: resp.data.data
@@ -74,6 +74,7 @@
     mounted() {
       //接收其他地方传过来的值，用于
       this.Bus.$on("my-event-file-small-upload", (data) => {
+        console.log(222);
         //如果有其他的参数需要传给后台，就封装在 data里
         this.params = data || {};
 
