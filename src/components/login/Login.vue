@@ -92,7 +92,7 @@
           //密码密文 md5
           userPwdClose: this.Md5(this.password)
         }
-        this.axios.post(`/admin/login/selectSysUser`, data)
+        this.axios.post(`/login/login/selectSysUser`, data)
           .then((resp) => {
             if (resp.data.flag) {
               //响应数据

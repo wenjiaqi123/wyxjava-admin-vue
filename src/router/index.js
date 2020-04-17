@@ -27,6 +27,8 @@ import Wait from '@/components/navgation/wait/Wait'
 Vue.use(Router)
 
 export default new Router({
+  //TODO 正式服务将 mode: "history"的注释取消掉
+  mode: "history",
   routes: [
     {path: '/login', name: 'Login', component: Login},
     {path: '/fileUpload', name: 'FileUpload', component: FileUpload},

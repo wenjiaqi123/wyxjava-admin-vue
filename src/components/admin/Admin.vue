@@ -144,7 +144,7 @@
       //页面加载
       load: function () {
         //查询菜单列表
-        this.axios.get(`/admin/sysMenu/menus/${this.userInfo.userId}`)
+        this.axios.get(`/login/sysMenu/menus/${this.userInfo.userId}`)
           .then(resp => {
             let list = resp.data.data;
             this.menuList = list;
