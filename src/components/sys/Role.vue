@@ -17,13 +17,28 @@
       </Table>
     </div>
 
-    <div class="addPanel" v-if="addPanel">
+    <!--新增角色-->
+    <Modal
+      title="Title"
+      v-model="addPanel"
+      :styles="{top: '50px'}">
 
-    </div>
+      <p slot="header">
+        <span style="">新增角色</span>
+      </p>
 
-    <div class="updatePanel" v-if="updatePanel">
+      <div>
+        角色名称: <input>
+      </div>
+    </Modal>
 
-    </div>
+    <!--修改角色-->
+    <Modal
+      title="Title"
+      v-model="updatePanel"
+      :styles="{top: '100px'}">
+
+    </Modal>
   </div>
 </template>
 
@@ -108,16 +123,5 @@
   /*添加账号*/
   .role .top .add{
     float: right;
-  }
-  /*添加账号面板*/
-  .role .addPanel{
-    width: 800px;
-    height: 700px;
-    border: 1px solid black;
-  }
-
-  /*更新账号面板*/
-  .role .updatePanel{
-
   }
 </style>
