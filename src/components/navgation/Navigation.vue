@@ -89,13 +89,17 @@
     },
     methods: {
       handleTabRemove(name) {
-
         this["tab" + name] = false;
       },
       //页面加载
       load: function () {
 
       }
+    },
+    computed: {
+      userInfo() {
+        return this.Store.getters.getUserInfo;
+      },
     },
     //监听
     watch: {
@@ -127,14 +131,16 @@
       }
     },
     created() {
-      //查询导航菜单列表
-      let promise = this.axios.get(`${this.domain.Admin}/menu/menuNavList`)
+      //查询菜单列表
+      let promise = this.axios.get(`/login/sysMenu/menus/${this.userInfo.userId}`)
         .then(resp => {
-          let list = resp.data.data.list;
-          this.menuNavList = list;
-        })
-        .catch(resp => {
+          for (let s of resp.data.data) {
+            if(s.menuCode == "navigation"){
+              this.menuNavList = s.sysMenuList;
+            }
+          }
         });
+
       // 创建时就加入 tabs
       this.tabs.push(this.tab);
 

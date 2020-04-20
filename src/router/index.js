@@ -23,6 +23,8 @@ import Icu from '@/components/navgation/icu/Icu'
 import Love from '@/components/navgation/love/Love'
 import Offer from '@/components/navgation/offer/Offer'
 import Wait from '@/components/navgation/wait/Wait'
+import Account from '@/components/sys/Account'
+import Role from '@/components/sys/Role'
 
 Vue.use(Router)
 
@@ -52,6 +54,8 @@ export default new Router({
     {path: '/icu', name: 'Icu', component: Icu},
     {path: '/love', name: 'Love', component: Love},
     {path: '/offer', name: 'Offer', component: Offer},
-    {path: '/wait', name: 'Wait', component: Wait}
+    {path: '/wait', name: 'Wait', component: Wait},
+    {path: '/account', name: 'Account', component: Account},
+    {path: '/role', name: 'Role', component: Role},
   ]
 })

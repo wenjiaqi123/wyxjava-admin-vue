@@ -84,6 +84,8 @@
         isCollapsed: false,
         //菜单列表
         menuList: [],
+        //导航列表
+        navNames:[],
         //显示面板
         flag: "chart",
         //传给 导航栏
@@ -122,18 +124,29 @@
       },
       //选中折叠菜单
       selectMenu: function (name) {
+        //轮播图
         if (name == "rotationChart") {
           this.$router.push("/rotationChart");
         }
+        //课程
         if (name == "course") {
           this.$router.push("/subject");
         }
+        //问题
         if (name == "question") {
           this.$router.push("/question");
         }
+        //账户
+        if (name == "account") {
+          this.$router.push("/account");
+        }
+        //角色
+        if (name == "role") {
+          this.$router.push("/role");
+        }
         //遍历
         for (let s of this.navNames) {
-          if (s == name) {
+          if (s.menuCode == name) {
             // this.tab = name
             this.$router.replace("/navigation");
             this.Bus.$emit("my-event-navigation",name);
@@ -148,6 +161,11 @@
           .then(resp => {
             let list = resp.data.data;
             this.menuList = list;
+            for (let s of this.menuList) {
+              if(s.menuCode == "navigation"){
+                this.navNames = s.sysMenuList;
+              }
+            }
           })
       }
     },

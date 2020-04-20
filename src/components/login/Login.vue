@@ -48,6 +48,10 @@
         </div>
       </div>
     </div>
+
+    <div>
+      <a href="http://www.beian.miit.gov.cn" target="_blank" style="font-size: 8px">备案号：苏ICP备18041692号</a>
+    </div>
   </div>
 </template>
 
@@ -130,7 +134,7 @@
               this.Bus.$emit("my-event-global-uploader", true);
             }
           })
-      }
+      },
     },
     mounted() {
     }

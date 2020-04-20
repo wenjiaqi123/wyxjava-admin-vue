@@ -15,7 +15,7 @@ module.exports = {
       //  / 是请求代称
       '/api':{
         //真实的请求 URL
-        target:"http://localhost:18080",
+        target:"http://www.jiaqisc.com:18080",
         //是否跨域
         changeOrigin:true,
         //替换  将 / 替换成 /
