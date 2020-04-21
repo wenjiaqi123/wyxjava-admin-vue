@@ -126,7 +126,7 @@
       <p>
         确定删除
         <span style="display: inline-block;margin: 0px 5px;color: #FF0000">{{tmpRow.roleName}}</span>
-        角色吗
+        角色吗 ?
       </p>
     </Modal>
   </div>

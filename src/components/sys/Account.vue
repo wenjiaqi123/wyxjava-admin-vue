@@ -43,7 +43,7 @@
     </div>
 
 
-    <!--新增角色-->
+    <!--新增账号信息-->
     <Modal
       title="Title"
       v-model="addPanel"
@@ -87,37 +87,84 @@
         </span>
         <Input
           prefix="ios-lock-outline"
-          v-model="pwd"
+          v-model="password"
           style="float: right;width: 84%"
           placeholder="输入登录密码"/>
       </div>
     </Modal>
 
-    <!--修改角色-->
+    <!--修改账号信息-->
     <Modal
       title="Title"
       v-model="updatePanel"
       :styles="{top: '50px'}"
       width="400px"
+      @on-cancel="cancelUpdate"
       @on-ok="okUpdate">
 
       <p slot="header">
         <span style="">修改账号信息</span>
       </p>
 
+      <!--用户名-->
+      <div class="modal-add-box">
+        <span class="modal-add-text">
+          用户名 :
+        </span>
+        <Input
+          prefix="ios-contact-outline"
+          v-model="tmpRow.userName"
+          style="float: right;width: 84%"
+          placeholder="输入用户名"/>
+      </div>
+
+      <!--登录账号-->
+      <div class="modal-add-box" style="margin-top: 25px">
+        <span class="modal-add-text">
+          手机号 :
+        </span>
+        <Input
+          prefix="ios-call-outline"
+          v-model="tmpRow.iphoneNo"
+          style="float: right;width: 84%"
+          placeholder="输入登录手机号"/>
+      </div>
+
+      <!--登录账号-->
+      <div class="modal-add-box" style="margin-top: 25px">
+        <span class="modal-add-text">
+          密&nbsp;&nbsp;&nbsp;码 :
+        </span>
+        <Input
+          prefix="ios-lock-outline"
+          v-model="userPwdOpen"
+          style="float: right;width: 84%"
+          placeholder="输入登录密码"/>
+      </div>
     </Modal>
 
-    <!--分配菜单-->
+    <!--分配权限-->
     <Modal
       title="Title"
       v-model="distPanel"
-      width="500px"
+      width="400px"
       @on-ok="okDist">
 
       <p slot="header">
-        <span style="">分配菜单</span>
+        <span style="">分配角色</span>
       </p>
 
+      <div class="modal-add-box">
+        <RadioGroup
+          v-model="currentRole"
+          vertical>
+          <Radio
+            v-for="(obj,i) in roleList"
+            :label="obj.roleId">
+            <span>{{obj.roleName}}</span>
+          </Radio>
+        </RadioGroup>
+      </div>
     </Modal>
 
     <!--删除用户-->
@@ -127,8 +174,8 @@
       @on-ok="okDel">
       <p>
         确定删除
-        <span style="display: inline-block;margin: 0px 5px;color: #FF0000"></span>
-        账号吗
+        <span style="display: inline-block;margin: 0px 5px;color: #FF0000">{{tmpRow.userName}}</span>
+        账号吗 ?
       </p>
     </Modal>
   </div>
@@ -192,6 +239,29 @@
         ],
         //账户列表
         accountList: [],
+        //角色列表
+        roleList: [
+          {
+            roleId: 1,
+            roleName: "超级管理员",
+            flag: true
+          },
+          {
+            roleId: 2,
+            roleName: "开发者",
+            flag: true
+          },
+          {
+            roleId: 3,
+            roleName: "高级管理员",
+            flag: true
+          },
+          {
+            roleId: 4,
+            roleName: "中级管理员",
+            flag: true
+          }
+        ],
         //新增角色
         addPanel: false,
         //修改角色
@@ -205,9 +275,13 @@
         //登录账号
         iphoneNo: "",
         //登录密码
-        pwd:"",
+        password: "",
+        //密码明文
+        userPwdOpen: "",
         //临时行
         tmpRow: Object,
+        //当前角色
+        currentRole: 0
       }
     },
     methods: {
@@ -225,6 +299,119 @@
       addRole: function () {
         this.addPanel = true
       },
+      //取消添加
+      cancelAdd: function () {
+        this.userName = ""
+        this.iphoneNo = ""
+        this.password = ""
+      },
+      //新增账号
+      okAdd: function () {
+        let data = {
+          userName: this.userName,
+          iphoneNo: this.iphoneNo,
+          //密码明文 base64
+          userPwdOpen: Base64.encode(this.password),
+          //密码密文 md5
+          userPwdClose: this.Md5(this.password)
+        }
+        this.axios.post(`/login/sysUser/user`, data)
+          .then((resp) => {
+            if (resp.data.flag) {
+              //重新请求
+              this.init()
+              this.$Notice.success({
+                title: "添加成功"
+              })
+              this.userName = ""
+              this.iphoneNo = ""
+              this.password = ""
+            }
+          })
+      },
+      //删除账号提示面板
+      delRole: function (row, index) {
+        this.tmpRow = row
+        this.delTipPanel = true
+      },
+      //删除账号
+      okDel: function () {
+        this.axios.delete(`/login/sysUser/user/${this.tmpRow.userId}`)
+          .then((resp) => {
+            if (resp.data.flag) {
+              //重新请求
+              this.init()
+              this.$Notice.success({
+                title: "删除成功"
+              })
+              this.tmpRow = Object
+            }
+          })
+      },
+      //编辑，展示面板
+      edit: function (row, index) {
+        this.tmpRow = row
+        this.updatePanel = true
+        this.userPwdOpen = Base64.decode(this.tmpRow.userPwdOpen)
+      },
+      //编辑 cancel回调
+      cancelUpdate: function () {
+
+      },
+      //编辑 ok回调
+      okUpdate: function () {
+        let data = {
+          userName: this.tmpRow.userName,
+          iphoneNo: this.tmpRow.iphoneNo,
+          //密码明文 base64
+          userPwdOpen: Base64.encode(this.userPwdOpen),
+          //密码密文 md5
+          userPwdClose: this.Md5(this.userPwdOpen)
+        }
+        this.axios.put(`/login/sysUser/user/${this.tmpRow.userId}`, data)
+          .then((resp) => {
+            if (resp.data.flag) {
+              //重新请求
+              this.init()
+              this.$Notice.success({
+                title: "修改成功"
+              })
+              this.tmpRow = Object
+            }
+          })
+      },
+      //分配权限
+      distribute: function (row, index) {
+        this.distPanel = true
+        this.tmpRow = row
+
+        //TODO 获取角色列表
+        this.axios.get(``)
+          .then((resp) => {
+            if (resp.data.flag) {
+              //角色列表
+              this.roleList = resp.data.data
+              //当前角色
+              for (let i of this.roleList) {
+                if (i.flag) {
+                  this.currentRole = i.roleId
+                }
+              }
+            }
+          })
+      },
+      //分配角色，请求后台
+      okDist: function () {
+        this.axios.put(`/login/sysUser/userRole/${this.tmpRow.userId}/${this.currentRole}`)
+          .then((resp) => {
+            if (resp.data.flag) {
+              this.$Notice.success({
+                title: "修改成功"
+              })
+              this.currentRole = 0
+            }
+          })
+      }
     },
     mounted() {
       this.init();
@@ -251,6 +438,7 @@
   .modal-add-box {
     overflow: hidden;
   }
+
   /*用户名，手机号，等文字*/
   .modal-add-text {
     display: inline-block;
