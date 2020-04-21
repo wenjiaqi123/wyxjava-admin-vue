@@ -62,7 +62,7 @@
           用户名 :
         </span>
         <Input
-          prefix="ios-create-outline"
+          prefix="ios-contact-outline"
           v-model="userName"
           style="float: right;width: 84%"
           placeholder="输入用户名"/>
@@ -74,7 +74,7 @@
           手机号 :
         </span>
         <Input
-          prefix="ios-calendar-outline"
+          prefix="ios-call-outline"
           v-model="iphoneNo"
           style="float: right;width: 84%"
           placeholder="输入登录手机号"/>
@@ -86,7 +86,7 @@
           密&nbsp;&nbsp;&nbsp;码 :
         </span>
         <Input
-          prefix="ios-calendar-outline"
+          prefix="ios-lock-outline"
           v-model="pwd"
           style="float: right;width: 84%"
           placeholder="输入登录密码"/>
