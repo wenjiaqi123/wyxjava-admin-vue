@@ -2,7 +2,7 @@
   <div class="account">
     <div class="top">
       <div class="add">
-        <Button type="success" size="default"> 新增账号 </Button>
+        <Button type="success" size="default"> 新增账号</Button>
       </div>
     </div>
 
@@ -45,9 +45,16 @@
             width: 100
           },
           {
-            title: "账号",
+            title: "账号名",
             slot: 'accountName',
             key: 'accountName',
+            resizable: true,
+            align: "center",
+          },
+          {
+            title: "登录账号",
+            slot: 'account',
+            key: 'account',
             resizable: true,
             align: "center",
           },
@@ -57,14 +64,14 @@
             key: 'role',
             resizable: true,
             align: "center",
-            width: 220
+            width: 200
           },
           {
-            title: "状态",
-            slot: 'status',
+            title: "操作",
+            slot: 'handle',
             resizable: true,
             align: "center",
-            width: 120
+            width: 180
           },
           {
             title: "删除",
@@ -76,15 +83,27 @@
           }
         ],
         //账户列表
-        accountList:[],
+        accountList: [],
         //新增角色
-        addPanel:false,
+        addPanel: false,
         //修改角色
-        updatePanel:false
+        updatePanel: false
       }
     },
-    methods: {},
+    methods: {
+      init: function () {
+        //请求列表
+        this.axios.get(`/login/sysUser/selectSysUser`)
+          .then((resp) => {
+            if(resp.data.flag){
+              let list = resp.data.data;
+              console.log(list);
+            }
+          })
+      }
+    },
     mounted() {
+      this.init();
     }
   }
 </script>
@@ -95,24 +114,24 @@
     margin: 0px auto;
   }
 
-  .account .top{
+  .account .top {
     overflow: hidden;
     margin: 15px auto 10px;
   }
 
-  .account .top .add{
+  .account .top .add {
     float: right;
   }
 
   /*添加账号面板*/
-  .account .addPanel{
+  .account .addPanel {
     width: 300px;
     height: 500px;
     border: 1px solid black;
   }
 
   /*更新账号面板*/
-  .account .updatePanel{
+  .account .updatePanel {
 
   }
 </style>
