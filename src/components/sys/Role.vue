@@ -11,8 +11,10 @@
         border
         show-header
         size="small"
+        draggable
         :columns="columns"
-        :data="roleList">
+        :data="roleList"
+        @on-drag-drop="showOrder">
 
         <!--角色名称-->
         <template slot-scope="{ row, index }" slot="roleName">
@@ -214,6 +216,11 @@
             }
           })
       },
+      //拖拽排序
+      showOrder: function (from, to) {
+        console.log(this.roleList[from]);
+        console.log(this.roleList[to]);
+      },
       //新增账号
       addRole: function () {
         this.addPanel = true;
@@ -303,13 +310,11 @@
         let nodes = this.$refs.tree.getCheckedNodes();
         let menuIds = new Array();
         for (let i of nodes) {
-          if (i.pid != 0) {
-            menuIds.push(i.menuId);
-          }
+          menuIds.push(i.menuId);
         }
         this.axios.put(`/login/sysRole/role/menus/${this.tmpRow.roleId}`, menuIds)
           .then((resp) => {
-            if(resp.data.flag){
+            if (resp.data.flag) {
               this.$Notice.success({
                 title: "分配成功"
               })
@@ -345,8 +350,6 @@
 
 <style scoped>
   .role {
-    width: 98%;
-    margin: 0px auto;
   }
 
   .role .top {

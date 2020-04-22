@@ -30,7 +30,7 @@ Vue.config.productionTip = false
 
 //全局配置axios，就是网页js请求的url路径
 
-axios.defaults.baseURL = "http://localhost:18080/admin/"
+axios.defaults.baseURL = "http://192.168.31.104:18080/admin/"
 // axios.defaults.baseURL = "http://www.wyxjava.com:/admin/"
 // 解决 options 预请求
 axios.defaults.headers = {

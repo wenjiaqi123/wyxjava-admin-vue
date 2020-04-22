@@ -11,8 +11,10 @@
         border
         show-header
         size="small"
+        draggable
         :columns="columns"
-        :data="accountList">
+        :data="accountList"
+        @on-drag-drop="showOrder">
 
         <!--账户名-->
         <template slot-scope="{ row, index }" slot="accountName">
@@ -26,7 +28,7 @@
 
         <!--角色-->
         <template slot-scope="{ row, index }" slot="role">
-          <!--          <span>{{row}}</span>-->
+          <span>{{row.sysRole.roleName}}</span>
         </template>
 
         <!--操作-->
@@ -212,14 +214,14 @@
             key: 'account',
             resizable: true,
             align: "center",
+            width: 200
           },
           {
             title: "角色",
             slot: "role",
             key: 'role',
             resizable: true,
-            align: "center",
-            width: 200
+            align: "left",
           },
           {
             title: "操作",
@@ -240,28 +242,7 @@
         //账户列表
         accountList: [],
         //角色列表
-        roleList: [
-          {
-            roleId: 1,
-            roleName: "超级管理员",
-            flag: true
-          },
-          {
-            roleId: 2,
-            roleName: "开发者",
-            flag: true
-          },
-          {
-            roleId: 3,
-            roleName: "高级管理员",
-            flag: true
-          },
-          {
-            roleId: 4,
-            roleName: "中级管理员",
-            flag: true
-          }
-        ],
+        roleList: [],
         //新增角色
         addPanel: false,
         //修改角色
@@ -294,6 +275,11 @@
               this.accountList = list;
             }
           })
+      },
+      //拖拽排序
+      showOrder: function (from, to) {
+        console.log(this.accountList[from]);
+        console.log(this.accountList[to]);
       },
       //新增账号
       addRole: function () {
@@ -384,17 +370,20 @@
       distribute: function (row, index) {
         this.distPanel = true
         this.tmpRow = row
-
-        //TODO 获取角色列表
-        this.axios.get(``)
+        this.currentRole = 0
+        //根据用户id请求当前分配角色
+        this.axios.get(`/login/sysRole/menuRole/${this.tmpRow.userId}`)
           .then((resp) => {
             if (resp.data.flag) {
               //角色列表
               this.roleList = resp.data.data
               //当前角色
               for (let i of this.roleList) {
-                if (i.flag) {
+                if (i.flag == 1) {
+                  i.flag = true
                   this.currentRole = i.roleId
+                } else if (i.flag == 0) {
+                  i.flag = false
                 }
               }
             }
@@ -421,8 +410,6 @@
 
 <style scoped>
   .account {
-    width: 98%;
-    margin: 0px auto;
   }
 
   .account .top {
