@@ -16,7 +16,7 @@ module.exports = {
       '/api':{
         //真实的请求 URL
         // target:"http://www.jiaqisc.com:18080",
-        target:"http://localhost:18080",
+        // target:"http://localhost:18080",
         //是否跨域
         changeOrigin:true,
         //替换  将 / 替换成 /
@@ -27,7 +27,7 @@ module.exports = {
     },
 
     // Various Dev Server settings
-    host: 'localhost', // can be overwritten by process.env.HOST
+    host: '127.0.0.1', // can be overwritten by process.env.HOST
     port: 7999, // can be overwritten by process.env.PORT, if port is in use, a free one will be determined
     autoOpenBrowser: false,
     errorOverlay: true,

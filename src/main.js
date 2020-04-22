@@ -9,6 +9,8 @@ import router from './router'
 import axios from 'axios'
 //post请求
 import qs from 'qs'
+//注入阿里OSS
+import OSS from 'ali-oss'
 //iview样式
 import ViewUI from 'view-design';
 import 'view-design/dist/styles/iview.css';
@@ -30,8 +32,8 @@ Vue.config.productionTip = false
 
 //全局配置axios，就是网页js请求的url路径
 
-axios.defaults.baseURL = "http://192.168.31.104:18080/admin/"
-// axios.defaults.baseURL = "http://www.wyxjava.com:/admin/"
+// axios.defaults.baseURL = "http://192.168.31.104:18080/admin/"
+axios.defaults.baseURL = "http://www.wyxjava.com:/admin/"
 // 解决 options 预请求
 axios.defaults.headers = {
   "Content-Type": "application/json;charset=utf-8"
@@ -53,6 +55,16 @@ Vue.prototype.Auth = Auth;
 //Vuex
 Vue.prototype.Store = store;
 
+//阿里云OSS
+let client = new OSS({
+  region:"cn-shanghai",
+  accessKeyId:"LTAI4GAJRmUsTTRY1do6GPCf",
+  accessKeySecret:"dSqpCuZAL9Iq8I2EC0pVVAwznq0p5w",
+  bucket:"wyxjava"
+})
+
+//文件存储
+Vue.prototype.OSS = client;
 
 //对原生数组扩展, 在第 i 个后面插入 item
 Array.prototype.insert = function (index, item) {

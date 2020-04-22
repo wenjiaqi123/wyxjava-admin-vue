@@ -28,7 +28,7 @@
 
         <!--角色-->
         <template slot-scope="{ row, index }" slot="role">
-          <span>{{row.sysRole.roleName}}</span>
+          <span v-if="row.sysRole!=null">{{row.sysRole.roleName}}</span>
         </template>
 
         <!--操作-->
@@ -82,7 +82,7 @@
           placeholder="输入登录手机号"/>
       </div>
 
-      <!--登录账号-->
+      <!--密码-->
       <div class="modal-add-box" style="margin-top: 25px">
         <span class="modal-add-text">
           密&nbsp;&nbsp;&nbsp;码 :
@@ -132,7 +132,7 @@
           placeholder="输入登录手机号"/>
       </div>
 
-      <!--登录账号-->
+      <!--密码-->
       <div class="modal-add-box" style="margin-top: 25px">
         <span class="modal-add-text">
           密&nbsp;&nbsp;&nbsp;码 :
@@ -394,6 +394,8 @@
         this.axios.put(`/login/sysUser/userRole/${this.tmpRow.userId}/${this.currentRole}`)
           .then((resp) => {
             if (resp.data.flag) {
+              //重新请求
+              this.init()
               this.$Notice.success({
                 title: "修改成功"
               })
